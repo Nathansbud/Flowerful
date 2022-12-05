@@ -2,7 +2,7 @@ const VS_LIGHTING = `#version 300 es
     layout(location=0) in vec4 vertexPos;
 
     void main() {
-        gl_Position = vec4(vertexPos);
+        gl_Position = vertexPos;
     }
 `
 

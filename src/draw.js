@@ -1,4 +1,6 @@
+import { vec4 } from 'gl-matrix';
 import { VS_LIGHTING, FS_LIGHTING } from './shaders/lighting.js'
+import { Camera } from './utils/camera.js';
 import { initShaderProgram } from './utils/shaderloader.js'
 
 /*
@@ -10,6 +12,7 @@ RESOURCE ZONE:
 
 let gl;
 let canvas;
+let camera; 
 
 let squareVAO;
 let squareVBO;
@@ -23,7 +26,6 @@ function initGL() {
     
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
-    
     
     const l_shader = initShaderProgram(gl, VS_LIGHTING, FS_LIGHTING);
     shaders['lighting'] = {
@@ -58,6 +60,18 @@ function initGL() {
         "vbo": positionBuffer,
         "vao": positionVAO
     }
+    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+    gl.bindVertexArray(null);
+
+    camera = new Camera(
+        gl, 
+        vec4.fromValues(0, 0, 0, 1), 
+        vec4.fromValues(1, 0, 0, 0), 
+        vec4.fromValues(0, 1, 0, 0),
+        45, 0.1, 100, gl.canvas.width, gl.canvas.height
+    )
+
+    console.log(camera.projMatrix)
 }
 
 
@@ -67,7 +81,14 @@ function drawGL() {
     gl.useProgram(shaders['lighting'].program);
     gl.bindVertexArray(buffers['position'].vao)
     gl.drawArrays(gl.TRIANGLES, 0, 6);
+    gl.bindVertexArray(null);
+    gl.useProgram(null);
+
+    // loop scene
+    requestAnimationFrame(drawGL);
 }
 
-
-window.onload = initGL;
+window.onload = () => {
+    initGL();
+    drawGL();
+}

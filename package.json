@@ -10,6 +10,7 @@
   "author": "Zack Amiton & Eva Schiller",
   "license": "ISC",
   "dependencies": {
+    "gl-matrix": "^3.4.3",
     "midi-json-parser": "^8.1.14",
     "three": "^0.147.0",
     "web-audio-beat-detector": "^8.1.39"
