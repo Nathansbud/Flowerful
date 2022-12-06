@@ -1,5 +1,6 @@
 import { vec4 } from 'gl-matrix';
 import { VS_LIGHTING, FS_LIGHTING } from './shaders/lighting.js'
+import { Cube } from './shapes/cube.js';
 import { Camera } from './utils/camera.js';
 import { initShaderProgram } from './utils/shaderloader.js'
 
@@ -16,6 +17,8 @@ let camera;
 
 let squareVAO;
 let squareVBO;
+
+let cube;
 
 const buffers = {}
 const shaders = {}
@@ -42,43 +45,8 @@ function initGL() {
 
     const positionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-    const positions = [
-        // Front face
-        -1.0, -1.0, 1.0, 
-        1.0, -1.0, 1.0, 
-        1.0, 1.0, 1.0, 
-        -1.0, 1.0, 1.0,
-      
-        // Back face
-        -1.0, -1.0, -1.0, 
-        -1.0, 1.0, -1.0, 
-        1.0, 1.0, -1.0, 
-        1.0, -1.0, -1.0,
-      
-        // Top face
-        -1.0, 1.0, -1.0, 
-        -1.0, 1.0, 1.0, 
-        1.0, 1.0, 1.0, 
-        1.0, 1.0, -1.0,
-      
-        // Bottom face
-        -1.0, -1.0, -1.0, 
-        1.0, -1.0, -1.0, 
-        1.0, -1.0, 1.0, 
-        -1.0, -1.0, 1.0,
-      
-        // Right face
-        1.0, -1.0, -1.0, 
-        1.0, 1.0, -1.0, 
-        1.0, 1.0, 1.0, 
-        1.0, -1.0, 1.0,
-      
-        // Left face
-        -1.0, -1.0, -1.0,
-        -1.0, -1.0, 1.0, 
-        -1.0, 1.0, 1.0, 
-        -1.0, 1.0, -1.0,
-    ];
+    cube = new Cube(5).getVertices();
+    const positions = cube;
       
     
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
@@ -86,8 +54,11 @@ function initGL() {
     const positionVAO = gl.createVertexArray();
     gl.bindVertexArray(positionVAO);
     gl.enableVertexAttribArray(0);
-    gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 3, 0);
+    gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 6, 0);
+    gl.enableVertexAttribArray(1);
+    gl.vertexAttribPointer(1, 3, gl.FLOAT, false, 6, 3);
     gl.bindAttribLocation(l_shader, 0, "vertexPosition");
+    gl.bindAttribLocation(l_shader, 1, "vertexNormal");
 
     buffers['position'] = {
         "vbo": positionBuffer,
@@ -103,6 +74,8 @@ function initGL() {
         vec4.fromValues(0, 1, 0, 0),
         45, 0.1, 100, gl.canvas.width, gl.canvas.height
     )
+
+    
 }
 
 
@@ -115,7 +88,7 @@ function drawGL() {
     gl.uniformMatrix4fv(shaders['lighting'].uniforms.projMatrix, false, camera.viewMatrix);
     
     gl.bindVertexArray(buffers['position'].vao)
-    gl.drawArrays(gl.TRIANGLES, 0, 72);
+    gl.drawArrays(gl.TRIANGLES, 0, cube.length/6);
     gl.bindVertexArray(null);
     gl.useProgram(null);
 
