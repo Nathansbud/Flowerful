@@ -49,6 +49,7 @@ function initGL() {
         1.0, -1.0, 
         -1.0, -1.0
     ]
+    
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
 
     const positionVAO = gl.createVertexArray();
@@ -70,8 +71,6 @@ function initGL() {
         vec4.fromValues(0, 1, 0, 0),
         45, 0.1, 100, gl.canvas.width, gl.canvas.height
     )
-
-    console.log(camera.projMatrix)
 }
 
 
