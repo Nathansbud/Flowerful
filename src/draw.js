@@ -31,32 +31,64 @@ function initGL() {
     shaders['lighting'] = {
         program: l_shader,
         attributes: {
-            vertexPos: gl.getAttribLocation(l_shader, "vertexPos")
+            vertexPosition: gl.getAttribLocation(l_shader, "vertexPosition"),
+            vertexNormal: gl.getAttribLocation(l_shader, "vertexNormal")
         },
         uniforms: {
-            proj: gl.getUniformLocation(l_shader, "proj"),
-            mat: gl.getUniformLocation(l_shader, "mat"),
+            projMatrix: gl.getUniformLocation(l_shader, "projMatrix"),
+            viewMatrix: gl.getUniformLocation(l_shader, "viewMatrix"),
         }
     }
 
     const positionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
     const positions = [
-        1.0, 1.0, 
-        -1.0, 1.0, 
-        1.0, -1.0,
-        1.0, 1.0, 
-        1.0, -1.0, 
-        -1.0, -1.0
-    ]
+        // Front face
+        -1.0, -1.0, 1.0, 
+        1.0, -1.0, 1.0, 
+        1.0, 1.0, 1.0, 
+        -1.0, 1.0, 1.0,
+      
+        // Back face
+        -1.0, -1.0, -1.0, 
+        -1.0, 1.0, -1.0, 
+        1.0, 1.0, -1.0, 
+        1.0, -1.0, -1.0,
+      
+        // Top face
+        -1.0, 1.0, -1.0, 
+        -1.0, 1.0, 1.0, 
+        1.0, 1.0, 1.0, 
+        1.0, 1.0, -1.0,
+      
+        // Bottom face
+        -1.0, -1.0, -1.0, 
+        1.0, -1.0, -1.0, 
+        1.0, -1.0, 1.0, 
+        -1.0, -1.0, 1.0,
+      
+        // Right face
+        1.0, -1.0, -1.0, 
+        1.0, 1.0, -1.0, 
+        1.0, 1.0, 1.0, 
+        1.0, -1.0, 1.0,
+      
+        // Left face
+        -1.0, -1.0, -1.0,
+        -1.0, -1.0, 1.0, 
+        -1.0, 1.0, 1.0, 
+        -1.0, 1.0, -1.0,
+    ];
+      
     
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
 
     const positionVAO = gl.createVertexArray();
     gl.bindVertexArray(positionVAO);
     gl.enableVertexAttribArray(0);
-    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
-    
+    gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 3, 0);
+    gl.bindAttribLocation(l_shader, 0, "vertexPosition");
+
     buffers['position'] = {
         "vbo": positionBuffer,
         "vao": positionVAO
@@ -78,8 +110,12 @@ function drawGL() {
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.useProgram(shaders['lighting'].program);
+    
+    gl.uniformMatrix4fv(shaders['lighting'].uniforms.viewMatrix, false, camera.projMatrix);
+    gl.uniformMatrix4fv(shaders['lighting'].uniforms.projMatrix, false, camera.viewMatrix);
+    
     gl.bindVertexArray(buffers['position'].vao)
-    gl.drawArrays(gl.TRIANGLES, 0, 6);
+    gl.drawArrays(gl.TRIANGLES, 0, 72);
     gl.bindVertexArray(null);
     gl.useProgram(null);
 
