@@ -1,6 +1,11 @@
 import { vec3 } from 'gl-matrix'
 
 export class Sphere {
+    #param1;
+    #param2;
+    #verts;
+    #buf;
+
     constructor(p1, p2) {
         this.#param1 = p1;
         this.#param2 = p2;
