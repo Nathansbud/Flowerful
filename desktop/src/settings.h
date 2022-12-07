@@ -8,6 +8,8 @@ struct Settings {
     std::string songFilepath;
     int songVolume;
 
+    int pixelCount;
+
     // Realtime Settings
     std::string sceneFilepath;
     int shapeParameter1 = 1;

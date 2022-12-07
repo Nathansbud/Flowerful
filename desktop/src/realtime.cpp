@@ -285,8 +285,10 @@ void Realtime::paintGL() {
     glUniform1i(glGetUniformLocation(pp_shader, "invert"), settings.extraCredit1);
     glUniform1i(glGetUniformLocation(pp_shader, "boxBlur"), settings.kernelBasedFilter);
     glUniform1i(glGetUniformLocation(pp_shader, "sharpen"), settings.extraCredit2);
+    glUniform1i(glGetUniformLocation(pp_shader, "pixels"), settings.pixelCount);
 
     glBindVertexArray(screen_vao);
+
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, pp_texture);
 
@@ -299,14 +301,14 @@ void Realtime::paintGL() {
 void Realtime::refreshFBOs() {
     glGenTextures(1, &pp_texture);
 
+    // Realtime post-processing effect land
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, pp_texture);
-
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, pp_fbo_width, pp_fbo_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glBindTexture(GL_TEXTURE_2D, 0);
 
     glGenRenderbuffers(1, &pp_rbo);
@@ -316,7 +318,9 @@ void Realtime::refreshFBOs() {
 
     glGenFramebuffers(1, &pp_fbo);
     glBindFramebuffer(GL_FRAMEBUFFER, pp_fbo);
+
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pp_texture, 0);
+
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, pp_rbo);
     glBindFramebuffer(GL_FRAMEBUFFER, pp_fbo_default);
 }
@@ -327,6 +331,8 @@ void Realtime::resizeGL(int w, int h) {
 
     // clear FBO data
     glDeleteTextures(1, &pp_texture);
+//    glDeleteTextures(1, &pp_pixelation);
+
     glDeleteRenderbuffers(1, &pp_rbo);
     glDeleteFramebuffers(1, &pp_fbo);
 

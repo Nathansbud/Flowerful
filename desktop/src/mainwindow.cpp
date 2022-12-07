@@ -188,7 +188,31 @@ void MainWindow::initialize() {
     vLayout->addWidget(ec4);
     vLayout->addWidget(raytrace);
 
-    // Media Controls    
+    // Media Controls
+    QLabel *pixel_label = new QLabel();
+    pixel_label->setText("Pixel Count");
+    pixel_label->setFont(font);
+
+    QGroupBox *pixelLayout = new QGroupBox();
+    QHBoxLayout *lpix = new QHBoxLayout();
+
+    pixelSlider = new QSlider(Qt::Orientation::Horizontal);
+    pixelSlider->setTickInterval(1);
+    pixelSlider->setMinimum(2);
+    pixelSlider->setMaximum(256);
+    pixelSlider->setValue(64);
+
+    pixelBox = new QSpinBox();
+    pixelBox->setMinimum(2);
+    pixelBox->setMaximum(256);
+    pixelBox->setSingleStep(1);
+    pixelBox->setValue(64);
+
+    // Adds the slider and number box to the parameter layouts
+    lpix->addWidget(pixelSlider);
+    lpix->addWidget(pixelBox);
+    pixelLayout->setLayout(lpix);
+
     uploadSong = new QPushButton();
     uploadSong->setText(QStringLiteral("Upload MP3"));
 
@@ -200,10 +224,10 @@ void MainWindow::initialize() {
     loop->setText(QStringLiteral("Loop"));
     loop->setChecked(true);
 
-    QGroupBox *volumeLayout = new QGroupBox(); // horizonal near slider alignment
+    QGroupBox *volumeLayout = new QGroupBox();
     QHBoxLayout *lvol = new QHBoxLayout();
 
-    volumeSlider = new QSlider(Qt::Orientation::Horizontal); // Far plane slider
+    volumeSlider = new QSlider(Qt::Orientation::Horizontal);
     volumeSlider->setTickInterval(1);
     volumeSlider->setMinimum(0);
     volumeSlider->setMaximum(100);
@@ -220,6 +244,8 @@ void MainWindow::initialize() {
     lvol->addWidget(volumeBox);
     volumeLayout->setLayout(lvol);
 
+    mediaControls->addWidget(pixel_label);
+    mediaControls->addWidget(pixelLayout);
     mediaControls->addWidget(uploadSong);
     mediaControls->addWidget(loop);
     mediaControls->addWidget(volume_label);
@@ -254,12 +280,32 @@ void MainWindow::connectUIElements() {
     connectRaytrace();
 
     // Flowerful UI
+    connectPixel();
     connectUploadSong();
     connectVolume();
 //    connectMute();
 //    connectLoop();
 //    connectPlay();
 //    connectPause();
+
+}
+
+void MainWindow::connectPixel() {
+    connect(pixelSlider, &QSlider::valueChanged, this, &MainWindow::onValChangePixelSlider);
+    connect(pixelBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+            this, &MainWindow::onValChangePixelBox);
+}
+
+void MainWindow::onValChangePixelSlider(int newValue) {
+    pixelBox->setValue(newValue);
+    settings.pixelCount = pixelBox->value();
+    realtime->settingsChanged();
+}
+
+void MainWindow::onValChangePixelBox(int newValue) {
+    pixelSlider->setValue(newValue);
+    settings.pixelCount = pixelBox->value();
+    realtime->settingsChanged();
 }
 
 void MainWindow::connectUploadSong() {

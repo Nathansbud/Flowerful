@@ -30,9 +30,9 @@ private:
     void connectRaytrace();
 
     // Flowerful Connectors
+    void connectPixel();
     void connectUploadSong();
     void connectVolume();
-
 
     Realtime *realtime;
     QCheckBox *filter1;
@@ -55,6 +55,9 @@ private:
     QPushButton *raytrace;
 
     // Flowerful UI
+    QSlider *pixelSlider;
+    QSpinBox *pixelBox;
+
     QPushButton *uploadSong;
     QCheckBox *loop;
 
@@ -79,7 +82,11 @@ private slots:
     void onRaytrace();
 
     // Flowerful Slots
+    void onValChangePixelSlider(int newValue);
+    void onValChangePixelBox(int newValue);
+
     void onUploadSong();
+
     void onValChangeVolumeSlider(int newValue);
     void onValChangeVolumeBox(int newValue);
 };
