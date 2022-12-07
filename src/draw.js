@@ -1,6 +1,6 @@
 import { vec4 } from 'gl-matrix';
 import { VS_LIGHTING, FS_LIGHTING } from './shaders/lighting.js'
-import { Cube } from './shapes/cube.js';
+import { Cube, Sphere, Cylinder, Cone } from './utils/shapes.js';
 import { Camera } from './utils/camera.js';
 import { initShaderProgram } from './utils/shaderloader.js'
 
@@ -45,10 +45,10 @@ function initGL() {
 
     const positionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-    cube = new Cube(5).getVertices();
-    const positions = cube;
-      
     
+    cube = new Cube(5).getData();
+    const positions = cube;
+
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
 
     const positionVAO = gl.createVertexArray();
