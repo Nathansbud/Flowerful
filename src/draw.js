@@ -1,15 +1,8 @@
-import { vec4 } from 'gl-matrix';
+import { vec4, mat4, mat3 } from 'gl-matrix';
 import { VS_LIGHTING, FS_LIGHTING } from './shaders/lighting.js'
 import { Cube, Sphere, Cylinder, Cone } from './utils/shapes.js';
 import { Camera } from './utils/camera.js';
 import { initShaderProgram } from './utils/shaderloader.js'
-
-/*
-
-RESOURCE ZONE:
-- Resizing: https://webgl2fundamentals.org/webgl/lessons/webgl-resizing-the-canvas.html
-
-*/
 
 let gl;
 let canvas;
@@ -18,10 +11,10 @@ let camera;
 let squareVAO;
 let squareVBO;
 
-let cube;
-
 const buffers = {}
 const shaders = {}
+
+let cube;
 
 function initGL() {
     canvas = document.querySelector("#gl-canvas");
@@ -42,21 +35,23 @@ function initGL() {
             viewMatrix: gl.getUniformLocation(l_shader, "viewMatrix"),
         }
     }
+    
 
     const positionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
     
-    cube = new Cube(5).getData();
-    const positions = cube;
-
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+    cube = new Cube(5, 0).getData();
+    
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(cube), gl.STATIC_DRAW);
 
     const positionVAO = gl.createVertexArray();
     gl.bindVertexArray(positionVAO);
     gl.enableVertexAttribArray(0);
     gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 6, 0);
+    
     gl.enableVertexAttribArray(1);
     gl.vertexAttribPointer(1, 3, gl.FLOAT, false, 6, 3);
+
     gl.bindAttribLocation(l_shader, 0, "vertexPosition");
     gl.bindAttribLocation(l_shader, 1, "vertexNormal");
 
@@ -75,6 +70,8 @@ function initGL() {
         45, 0.1, 100, gl.canvas.width, gl.canvas.height
     )
 
+    console.log([camera.projMatrix, camera.viewMatrix])
+
     
 }
 
@@ -87,8 +84,11 @@ function drawGL() {
     gl.uniformMatrix4fv(shaders['lighting'].uniforms.viewMatrix, false, camera.projMatrix);
     gl.uniformMatrix4fv(shaders['lighting'].uniforms.projMatrix, false, camera.viewMatrix);
     
+    gl.uniformMatrix4fv(shaders['lighting'].uniforms.modelMatrix, false, mat4.create());
+    gl.uniformMatrix4fv(shaders['lighting'].uniforms.normMatrix, false, mat3.create());
+    
     gl.bindVertexArray(buffers['position'].vao)
-    gl.drawArrays(gl.TRIANGLES, 0, cube.length/6);
+    gl.drawArrays(gl.TRIANGLES, 0, cube.length / 6);
     gl.bindVertexArray(null);
     gl.useProgram(null);
 

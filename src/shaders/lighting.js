@@ -3,21 +3,20 @@ const VS_LIGHTING = `#version 300 es
     layout(location=1) in vec3 vertexNormal;
 
     out vec4 worldPosition;
-    // out vec3 worldNormal;
+    out vec3 worldNormal;
 
-    // uniform mat4 modelMatrix;
-    // uniform mat3 normMatrix;
+    uniform mat4 modelMatrix;
+    uniform mat3 normMatrix;
     uniform mat4 viewMatrix;
     uniform mat4 projMatrix;
 
     void main() {
         vec4 pos = vec4(vertexPosition, 1);
 
-        // worldPosition = modelMatrix * pos;
-        // worldNormal = normMatrix * vertexNormal;
+        worldPosition = modelMatrix * pos;
+        worldNormal = normMatrix * vertexNormal;
 
-        gl_Position = (projMatrix * viewMatrix) * pos;
-            // * modelMatrix) * pos;
+        gl_Position = (projMatrix * viewMatrix * modelMatrix) * pos;
     }
 `
 

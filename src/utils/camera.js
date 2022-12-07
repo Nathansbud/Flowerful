@@ -38,7 +38,7 @@ export class Camera {
     constructor(gl, position, look, up, heightAngle, near, far, width, height) {
         this.#aspectRatio = width / height;
         this.#heightAngle = heightAngle;
-        this.#widthAngle = 2 * Math.atan(Math.tan(this.heightAngle / 2) * this.aspectRatio);
+        this.#widthAngle = 2 * Math.atan(Math.tan(this.#heightAngle / 2) * this.#aspectRatio);
         
         this.#initialPosition = position;
         this.#initialLook = look;
@@ -56,8 +56,8 @@ export class Camera {
         const c = -this.#near/this.#far;
 
         this.#scale = mat4.fromValues(
-            1 / (far * Math.tan(this.widthAngle / 2)), 0, 0, 0, 
-            0, 1 / (far * Math.tan(this.heightAngle / 2)), 0, 0,
+            1 / (far * Math.tan(this.#widthAngle / 2)), 0, 0, 0, 
+            0, 1 / (far * Math.tan(this.#heightAngle / 2)), 0, 0,
             0, 0, 1 / far, 0,
             0, 0, 0, 1
         );
@@ -81,15 +81,7 @@ export class Camera {
         this.#w = vec4.normalize(vec4.create(), vec4.negate(vec4.create(), this.#look));
         this.#v = vec4.normalize(
             vec4.create(), 
-            vec4.subtract(
-                vec4.create(),
-                this.#up, 
-                vec4.scale(
-                    vec4.create(), 
-                    this.#w, 
-                    vec4.dot(this.#up, this.#w)
-                )
-            )
+            vec4.scaleAndAdd(vec4.create(), this.#up, this.#w, -vec4.dot(this.#up, this.#w))
         );
 
         this.#u = vec4.normalize(
@@ -100,7 +92,7 @@ export class Camera {
                 this.#w
             )
         );
-
+        
         this.#viewMatrix = mat4.fromValues(
             this.#u[0], this.#v[0], this.#w[0], 0,
             this.#u[1], this.#v[1], this.#w[1], 0,

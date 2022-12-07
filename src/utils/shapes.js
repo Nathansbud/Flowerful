@@ -1,7 +1,5 @@
 import { vec3 } from 'gl-matrix'
 
-const buf = vec3.create();
-
 export class Sphere {
     #param1;
     #param2;
@@ -56,22 +54,22 @@ export class Sphere {
 
     #makeTile(topLeft, topRight, bottomLeft, bottomRight) {
         this.#insertVec3(topLeft);
-        this.#insertVec3(vec3.normalize(buf, topLeft));
+        this.#insertVec3(vec3.normalize(vec3.create(), topLeft));
         
         this.#insertVec3(bottomLeft);
-        this.#insertVec3(vec3.normalize(buf, bottomLeft));
+        this.#insertVec3(vec3.normalize(vec3.create(), bottomLeft));
 
         this.#insertVec3(bottomRight);
-        this.#insertVec3(vec3.normalize(buf, bottomRight));
+        this.#insertVec3(vec3.normalize(vec3.create(), bottomRight));
 
         this.#insertVec3(topLeft);
-        this.#insertVec3(vec3.normalize(buf, topLeft));
+        this.#insertVec3(vec3.normalize(vec3.create(), topLeft));
         
         this.#insertVec3(bottomRight);
-        this.#insertVec3(vec3.normalize(buf, bottomRight));
+        this.#insertVec3(vec3.normalize(vec3.create(), bottomRight));
 
         this.#insertVec3(topRight);
-        this.#insertVec3(vec3.normalize(buf, topRight));
+        this.#insertVec3(vec3.normalize(vec3.create(), topRight));
     }
 
     #insertVec3(v) {
@@ -95,10 +93,10 @@ export class Cube {
     
     #makeTile(topLeft, topRight, bottomLeft, bottomRight) {
         const nc = (a, b, c) => vec3.normalize(
-            buf, 
-            vec3.cross(buf, 
-                vec3.subtract(buf, b, a),
-                vec3.subtract(buf, c, a)
+            vec3.create(), 
+            vec3.cross(vec3.create(), 
+                vec3.subtract(vec3.create(), b, a),
+                vec3.subtract(vec3.create(), c, a)
             )
         )
             
@@ -123,14 +121,14 @@ export class Cube {
 
     #makeFace(topLeft, topRight, bottomLeft, _) {
         const cv = (f1, f2) => vec3.scaleAndAdd(
-            buf,
+            vec3.create(),
             vec3.scaleAndAdd(
-                buf, 
+                vec3.create(), 
                 topLeft, 
-                vec3.subtract(buf, topRight, topLeft),
+                vec3.subtract(vec3.create(), topRight, topLeft),
                 f1
             ),
-            vec3.subtract(buf, bottomLeft, topLeft),
+            vec3.subtract(vec3.create(), bottomLeft, topLeft),
             f2
         )
 
@@ -184,14 +182,14 @@ export class Cylinder {
     #makeTile(topLeft, topRight, bottomLeft, bottomRight) {
         const zeroY = vec3.fromValues(1, 0, 1);
         
-        const tln = vec3.normalize(buf, vec3.mul(buf, topLeft, zeroY));
-        const brn = vec3.normalize(buf, vec3.mul(buf, bottomRight, zeroY));
+        const tln = vec3.normalize(vec3.create(), vec3.mul(vec3.create(), topLeft, zeroY));
+        const brn = vec3.normalize(vec3.create(), vec3.mul(vec3.create(), bottomRight, zeroY));
         
         this.#insertVec3(topLeft);
         this.#insertVec3(tln);
 
         this.#insertVec3(bottomLeft);
-        this.#insertVec3(vec3.normalize(buf, vec3.mul(buf, bottomLeft, zeroY)));
+        this.#insertVec3(vec3.normalize(vec3.create(), vec3.mul(vec3.create(), bottomLeft, zeroY)));
 
         this.#insertVec3(bottomRight);
         this.#insertVec3(brn);
@@ -203,7 +201,7 @@ export class Cylinder {
         this.#insertVec3(brn);
 
         this.#insertVec3(topRight);
-        this.#insertVec3(vec3.normalize(buf, vec3.mul(buf, topRight, zeroY)));
+        this.#insertVec3(vec3.normalize(vec3.create(), vec3.mul(vec3.create(), topRight, zeroY)));
     }
 
     #makeCapPiece(leftCurr, leftNext, rightCurr, rightNext, isTop) {
@@ -240,20 +238,20 @@ export class Cylinder {
             const nextStep = (i + 1) / this.#param1;
 
             this.#makeTile(
-                vec3.scaleAndAdd(buf, left, onlyY, -topStep),
-                vec3.scaleAndAdd(buf, right, onlyY, -topStep),
-                vec3.scaleAndAdd(buf, left, onlyY, -nextStep),
-                vec3.scaleAndAdd(buf, right, onlyY, -nextStep)
+                vec3.scaleAndAdd(vec3.create(), left, onlyY, -topStep),
+                vec3.scaleAndAdd(vec3.create(), right, onlyY, -topStep),
+                vec3.scaleAndAdd(vec3.create(), left, onlyY, -nextStep),
+                vec3.scaleAndAdd(vec3.create(), right, onlyY, -nextStep)
             )
             
             const leftPath = vec3.fromValues(-left[0], 0.5 - left[1], -left[2]);
             const rightPath = vec3.fromValues(-right[0], 0.5 - right[1], -right[2]);
 
             this.#makeCapPiece(
-                vec3.scaleAndAdd(buf, left, leftPath, nextStep),
-                vec3.scaleAndAdd(buf, right, rightPath, nextStep),
-                vec3.scaleAndAdd(buf, left, leftPath, topStep),
-                vec3.scaleAndAdd(buf, right, rightPath, topStep),
+                vec3.scaleAndAdd(vec3.create(), left, leftPath, nextStep),
+                vec3.scaleAndAdd(vec3.create(), right, rightPath, nextStep),
+                vec3.scaleAndAdd(vec3.create(), left, leftPath, topStep),
+                vec3.scaleAndAdd(vec3.create(), right, rightPath, topStep),
                 true
             );
             
@@ -263,10 +261,10 @@ export class Cylinder {
             right[1] *= -1;
 
             this.#makeCapPiece(
-                vec3.scaleAndAdd(buf, left, leftPath, topStep),
-                vec3.scaleAndAdd(buf, right, rightPath, topStep),
-                vec3.scaleAndAdd(buf, left, leftPath, nextStep),
-                vec3.scaleAndAdd(buf, right, rightPath, nextStep),
+                vec3.scaleAndAdd(vec3.create(), left, leftPath, topStep),
+                vec3.scaleAndAdd(vec3.create(), right, rightPath, topStep),
+                vec3.scaleAndAdd(vec3.create(), left, leftPath, nextStep),
+                vec3.scaleAndAdd(vec3.create(), right, rightPath, nextStep),
                 false
             );
 
