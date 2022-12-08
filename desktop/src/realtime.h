@@ -20,6 +20,7 @@
 #include "./utils/camera.h"
 #include "./utils/sceneparser.h"
 #include "./utils/shaderloader.h"
+#include "./utils/SceneMaker.h"
 #include "settings.h"
 
 // Might be better served in an enum
@@ -28,6 +29,7 @@ enum ShapeID {
     SPHERE_ID = 1,
     CYLINDER_ID = 2,
     CONE_ID = 3,
+    MUSH_ID = 4,
 };
 
 class Realtime : public QOpenGLWidget
@@ -74,12 +76,13 @@ private:
 
     Camera camera;
     RenderData renderData;
+    MushroomData mushrooms;
 
     // GL variables
     GLuint m_shader;
-    GLuint primitive_vaos[4];                           // All primtives are VBOs of [(vertex, normal), ...]
-    GLuint primitive_vbos[4];
-    std::vector<float> primitive_data[4];
+    GLuint primitive_vaos[5];                           // All primtives are VBOs of [(vertex, normal), ...]
+    GLuint primitive_vbos[5];
+    std::vector<float> primitive_data[5];
 
     // Post-processing data
     GLuint pp_shader;

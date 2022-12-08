@@ -688,6 +688,7 @@ bool ScenefileReader::parsePrimitive(const QDomElement &prim, SceneNode* node) {
    std::string primType = prim.attribute("name").toStdString();
    if (primType == "sphere") primitive->type = PrimitiveType::PRIMITIVE_SPHERE;
    else if (primType == "cube") primitive->type = PrimitiveType::PRIMITIVE_CUBE;
+   else if (primType == "mush") primitive->type = PrimitiveType::PRIMITIVE_MUSHTOP;
    else if (primType == "cylinder") primitive->type = PrimitiveType::PRIMITIVE_CYLINDER;
    else if (primType == "cone") primitive->type = PrimitiveType::PRIMITIVE_CONE;
    else if (primType == "torus") primitive->type = PrimitiveType::PRIMITIVE_TORUS;

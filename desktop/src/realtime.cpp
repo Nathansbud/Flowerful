@@ -16,6 +16,7 @@
 #include "./shapes/Cylinder.h"
 #include "./shapes/Shape.h"
 #include "./shapes/Sphere.h"
+#include "shapes/mush.h"
 
 #include "./raytracer/raytracer.h"
 #include "./raytracer/raytracescene.h"
@@ -56,8 +57,8 @@ void Realtime::finish() {
     glDeleteProgram(pp_shader);
 
     // clear out our VAO/VBOs for each primitive
-    glDeleteVertexArrays(4, primitive_vaos);
-    glDeleteBuffers(4, primitive_vbos);
+    glDeleteVertexArrays(5, primitive_vaos);
+    glDeleteBuffers(5, primitive_vbos);
 
     // clear FBO data
     glDeleteTextures(1, &pp_texture);
@@ -114,8 +115,8 @@ void Realtime::initializeGL() {
     glUseProgram(0);
 
     // generate vbo buffers
-    glGenBuffers(4, primitive_vbos);
-    glGenVertexArrays(4, primitive_vaos);
+    glGenBuffers(5, primitive_vbos);
+    glGenVertexArrays(5, primitive_vaos);
 
     refreshShapes();
 
@@ -135,6 +136,8 @@ void Realtime::initializeGL() {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     refreshFBOs();
+    SceneMaker::generateMushrooms(mushrooms);
+
 }
 
 void Realtime::refreshCamera() {
@@ -149,7 +152,7 @@ void Realtime::refreshShapes() {
     int p1 = settings.shapeParameter1;
     int p2 = settings.shapeParameter2;
 
-    for(int i = 0; i < 4; i++) {
+    for(int i = 0; i < 5; i++) {
         switch(i)  {
             case ShapeID::SPHERE_ID: {
                 Sphere s = Sphere();
@@ -171,6 +174,12 @@ void Realtime::refreshShapes() {
             }
             case ShapeID::CYLINDER_ID: {
                 Cylinder s = Cylinder();
+                s.generateShape(p1, p2);
+                primitive_data[i] = s.getVertexData();
+                break;
+            }
+            case ShapeID::MUSH_ID: {
+                Mush s = Mush();
                 s.generateShape(p1, p2);
                 primitive_data[i] = s.getVertexData();
                 break;
@@ -235,7 +244,7 @@ void Realtime::paintGL() {
     glUniform1f(glGetUniformLocation(m_shader, "kd"), renderData.globalData.kd);
     glUniform1f(glGetUniformLocation(m_shader, "ks"), renderData.globalData.ks);
 
-    for(RenderShapeData& shape : renderData.shapes) {
+    for(RenderShapeData& shape : mushrooms.mushroom1) {
         int SHAPE_ID = 0;
         switch(shape.primitive.type) {
             case PrimitiveType::PRIMITIVE_CUBE:
@@ -250,6 +259,9 @@ void Realtime::paintGL() {
             case PrimitiveType::PRIMITIVE_SPHERE:
                 SHAPE_ID = ShapeID::SPHERE_ID;
                 break;
+            case PrimitiveType::PRIMITIVE_MUSHTOP:
+                SHAPE_ID = ShapeID::MUSH_ID;
+            break;
             default:
                 continue;
         }

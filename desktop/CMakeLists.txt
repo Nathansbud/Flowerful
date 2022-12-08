@@ -36,6 +36,7 @@ add_executable(${PROJECT_NAME}
     src/utils/scenefilereader.cpp
     src/utils/sceneparser.cpp
     src/utils/camera.cpp
+    src/utils/SceneMaker.cpp
 
     src/mainwindow.h
     src/realtime.h
@@ -47,6 +48,7 @@ add_executable(${PROJECT_NAME}
     src/utils/camera.h
     src/utils/rgba.h
     src/utils/postprocess.h
+    src/utils/SceneMaker.h
 
     src/shapes/Shape.h
     src/shapes/Cone.cpp
@@ -57,6 +59,8 @@ add_executable(${PROJECT_NAME}
     src/shapes/Cylinder.h
     src/shapes/Sphere.cpp
     src/shapes/Sphere.h
+    src/shapes/mush.h
+    src/shapes/mush.cpp
 
     src/raytracer/intersect.h
     src/raytracer/raytracer.cpp
