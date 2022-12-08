@@ -5,23 +5,19 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <random>
 #include "rgba.h"
 
 
 struct MushroomData {
-    std::vector<RenderShapeData> mushroom1;
-    std::vector<RenderShapeData> mushroom2;
-    std::vector<RenderShapeData> mushroom3;
-    std::vector<RenderShapeData> mushroom4;
+    std::vector<RenderShapeData> pieces;
     std::map<std::string, TextureData> textures;
 };
-
-
-
 
 class SceneMaker {
 
 public:
-   static void generateMushrooms(MushroomData &mushrooms);
+   static MushroomData* generateMushroom(int variant, float xOffset, float zOffset);
+   static std::vector<MushroomData*> generateScene(int gridLength, int gridDistance);
 };
 

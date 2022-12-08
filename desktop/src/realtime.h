@@ -76,7 +76,8 @@ private:
 
     Camera camera;
     RenderData renderData;
-    MushroomData mushrooms;
+
+    std::vector<MushroomData*> mushGrid;
 
     // GL variables
     GLuint m_shader;

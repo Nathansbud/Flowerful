@@ -6,9 +6,8 @@
 struct Settings {
     // Flowerful Settings
     std::string songFilepath;
-    int songVolume;
-
-    int pixelCount;
+    int songVolume = 50;
+    int pixelCount = 64;
 
     // Realtime Settings
     std::string sceneFilepath;

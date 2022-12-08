@@ -43,8 +43,7 @@ Realtime::Realtime(QWidget *parent)
     audioOutput = new QAudioOutput;
 
     player->setAudioOutput(audioOutput);
-    player->setSource(QUrl::fromLocalFile("/Users/zackamiton/Torrents/SoulSeek Downloads/track.mp3"));
-    audioOutput->setVolume(0.5f);
+    audioOutput->setVolume(settings.songVolume / 100.f);
     player->play();
 }
 
@@ -68,6 +67,10 @@ void Realtime::finish() {
     // clear fullscreen quad
     glDeleteVertexArrays(1, &screen_vao);
     glDeleteBuffers(1, &screen_vbo);
+
+    for(int i = 0; i < mushGrid.size(); i++) {
+        if(mushGrid[i] != nullptr) delete mushGrid[i];
+    }
 
     this->doneCurrent();
 }
@@ -136,8 +139,7 @@ void Realtime::initializeGL() {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     refreshFBOs();
-    SceneMaker::generateMushrooms(mushrooms);
-
+    mushGrid = SceneMaker::generateScene(20, 4);
 }
 
 void Realtime::refreshCamera() {
@@ -244,41 +246,46 @@ void Realtime::paintGL() {
     glUniform1f(glGetUniformLocation(m_shader, "kd"), renderData.globalData.kd);
     glUniform1f(glGetUniformLocation(m_shader, "ks"), renderData.globalData.ks);
 
-    for(RenderShapeData& shape : mushrooms.mushroom1) {
-        int SHAPE_ID = 0;
-        switch(shape.primitive.type) {
-            case PrimitiveType::PRIMITIVE_CUBE:
-                SHAPE_ID = ShapeID::CUBE_ID;
+    for(MushroomData* mush : mushGrid) {
+        if(mush == nullptr) continue;
+
+        for(RenderShapeData& shape : mush->pieces) {
+            int SHAPE_ID = 0;
+            switch(shape.primitive.type) {
+                case PrimitiveType::PRIMITIVE_CUBE:
+                    SHAPE_ID = ShapeID::CUBE_ID;
+                    break;
+                case PrimitiveType::PRIMITIVE_CONE:
+                    SHAPE_ID = ShapeID::CONE_ID;
+                    break;
+                case PrimitiveType::PRIMITIVE_CYLINDER:
+                    SHAPE_ID = ShapeID::CYLINDER_ID;
+                    break;
+                case PrimitiveType::PRIMITIVE_SPHERE:
+                    SHAPE_ID = ShapeID::SPHERE_ID;
+                    break;
+                case PrimitiveType::PRIMITIVE_MUSHTOP:
+                    SHAPE_ID = ShapeID::MUSH_ID;
                 break;
-            case PrimitiveType::PRIMITIVE_CONE:
-                SHAPE_ID = ShapeID::CONE_ID;
-                break;
-            case PrimitiveType::PRIMITIVE_CYLINDER:
-                SHAPE_ID = ShapeID::CYLINDER_ID;
-                break;
-            case PrimitiveType::PRIMITIVE_SPHERE:
-                SHAPE_ID = ShapeID::SPHERE_ID;
-                break;
-            case PrimitiveType::PRIMITIVE_MUSHTOP:
-                SHAPE_ID = ShapeID::MUSH_ID;
-            break;
-            default:
-                continue;
+                default:
+                    continue;
+            }
+
+            glBindVertexArray(primitive_vaos[SHAPE_ID]);
+            glUniformMatrix4fv(glGetUniformLocation(m_shader, "modelMatrix"), 1, GL_FALSE, &(shape.ctm[0][0]));
+            glUniformMatrix3fv(glGetUniformLocation(m_shader, "normMatrix"), 1, GL_FALSE, &(shape.nictm[0][0]));
+
+            SceneMaterial& mat = shape.primitive.material;
+            glUniform4f(glGetUniformLocation(m_shader, "cAmbient"), mat.cAmbient.r, mat.cAmbient.g, mat.cAmbient.b, mat.cAmbient.a);
+            glUniform4f(glGetUniformLocation(m_shader, "cDiffuse"), mat.cDiffuse.r, mat.cDiffuse.g, mat.cDiffuse.b, mat.cDiffuse.a);
+            glUniform4f(glGetUniformLocation(m_shader, "cSpecular"), mat.cSpecular.r, mat.cSpecular.g, mat.cSpecular.b, mat.cSpecular.a);
+            glUniform1f(glGetUniformLocation(m_shader, "cShininess"), mat.shininess);
+            glUniform4f(glGetUniformLocation(m_shader, "cameraPos"), camPos.x, camPos.y, camPos.z, 1);
+
+            glDrawArrays(GL_TRIANGLES, 0, primitive_data[SHAPE_ID].size() / 6);
         }
-
-        glBindVertexArray(primitive_vaos[SHAPE_ID]);
-        glUniformMatrix4fv(glGetUniformLocation(m_shader, "modelMatrix"), 1, GL_FALSE, &(shape.ctm[0][0]));
-        glUniformMatrix3fv(glGetUniformLocation(m_shader, "normMatrix"), 1, GL_FALSE, &(shape.nictm[0][0]));
-
-        SceneMaterial& mat = shape.primitive.material;
-        glUniform4f(glGetUniformLocation(m_shader, "cAmbient"), mat.cAmbient.r, mat.cAmbient.g, mat.cAmbient.b, mat.cAmbient.a);
-        glUniform4f(glGetUniformLocation(m_shader, "cDiffuse"), mat.cDiffuse.r, mat.cDiffuse.g, mat.cDiffuse.b, mat.cDiffuse.a);
-        glUniform4f(glGetUniformLocation(m_shader, "cSpecular"), mat.cSpecular.r, mat.cSpecular.g, mat.cSpecular.b, mat.cSpecular.a);
-        glUniform1f(glGetUniformLocation(m_shader, "cShininess"), mat.shininess);
-        glUniform4f(glGetUniformLocation(m_shader, "cameraPos"), camPos.x, camPos.y, camPos.z, 1);
-
-        glDrawArrays(GL_TRIANGLES, 0, primitive_data[SHAPE_ID].size() / 6);
     }
+
     glBindVertexArray(0);
     glUseProgram(0);
 
