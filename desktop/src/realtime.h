@@ -115,6 +115,8 @@ private:
 
     // Helper fns
     void loadLights();
+    void drawShapes(std::vector<RenderShapeData>& shapes);
+
     void refreshShapes();
     void refreshCamera();
     void refreshFBOs();

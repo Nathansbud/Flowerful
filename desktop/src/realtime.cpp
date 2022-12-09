@@ -237,14 +237,53 @@ void Realtime::loadLights() {
 }
 
 
+void Realtime::drawShapes(std::vector<RenderShapeData>& shapes) {
+    glm::vec4 camPos = camera.getWorldPosition();
+    for(RenderShapeData& shape : shapes) {
+        int SHAPE_ID = 0;
+        switch(shape.primitive.type) {
+            case PrimitiveType::PRIMITIVE_CUBE:
+                SHAPE_ID = ShapeID::CUBE_ID;
+                break;
+            case PrimitiveType::PRIMITIVE_CONE:
+                SHAPE_ID = ShapeID::CONE_ID;
+                break;
+            case PrimitiveType::PRIMITIVE_CYLINDER:
+                SHAPE_ID = ShapeID::CYLINDER_ID;
+                break;
+            case PrimitiveType::PRIMITIVE_SPHERE:
+                SHAPE_ID = ShapeID::SPHERE_ID;
+                break;
+            case PrimitiveType::PRIMITIVE_MUSHTOP:
+                SHAPE_ID = ShapeID::MUSH_ID;
+            break;
+            default:
+                continue;
+        }
 
+        glBindVertexArray(primitive_vaos[SHAPE_ID]);
+        glUniformMatrix4fv(glGetUniformLocation(m_shader, "modelMatrix"), 1, GL_FALSE, &(shape.ctm[0][0]));
+        glUniformMatrix3fv(glGetUniformLocation(m_shader, "normMatrix"), 1, GL_FALSE, &(shape.nictm[0][0]));
+
+        SceneMaterial& mat = shape.primitive.material;
+        glUniform4f(glGetUniformLocation(m_shader, "cAmbient"), mat.cAmbient.r, mat.cAmbient.g, mat.cAmbient.b, mat.cAmbient.a);
+        glUniform4f(glGetUniformLocation(m_shader, "cDiffuse"), mat.cDiffuse.r, mat.cDiffuse.g, mat.cDiffuse.b, mat.cDiffuse.a);
+        glUniform4f(glGetUniformLocation(m_shader, "cSpecular"), mat.cSpecular.r, mat.cSpecular.g, mat.cSpecular.b, mat.cSpecular.a);
+        glUniform1f(glGetUniformLocation(m_shader, "cShininess"), mat.shininess);
+        glUniform4f(glGetUniformLocation(m_shader, "cameraPos"), camPos.x, camPos.y, camPos.z, 1);
+        glUniform4f(glGetUniformLocation(m_shader, "fogColor"), fogColor.r, fogColor.g, fogColor.b, 1);
+        glUniform1f(glGetUniformLocation(m_shader, "fogMax"), 0.8 * settings.farPlane);
+        glUniform1f(glGetUniformLocation(m_shader, "fogMin"), settings.nearPlane);
+
+        glDrawArrays(GL_TRIANGLES, 0, primitive_data[SHAPE_ID].size() / 6);
+    }
+}
 
 void Realtime::paintGL() {
     glBindFramebuffer(GL_FRAMEBUFFER, pp_fbo);
     glViewport(0, 0, pp_fbo_width, pp_fbo_height);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glm::vec4 camPos = camera.getWorldPosition();
     glUseProgram(m_shader);
 
     loadLights();
@@ -254,52 +293,9 @@ void Realtime::paintGL() {
     glUniform1f(glGetUniformLocation(m_shader, "kd"), renderData.globalData.kd);
     glUniform1f(glGetUniformLocation(m_shader, "ks"), renderData.globalData.ks);
 
-//    for(RenderShapeData& shape : renderData.shapes) {
-
-
-//    }
-
+    drawShapes(renderData.shapes);
     for(MushroomData* mush : mushGrid) {
-        if(mush == nullptr) continue;
-
-        for(RenderShapeData& shape : mush->pieces) {
-            int SHAPE_ID = 0;
-            switch(shape.primitive.type) {
-                case PrimitiveType::PRIMITIVE_CUBE:
-                    SHAPE_ID = ShapeID::CUBE_ID;
-                    break;
-                case PrimitiveType::PRIMITIVE_CONE:
-                    SHAPE_ID = ShapeID::CONE_ID;
-                    break;
-                case PrimitiveType::PRIMITIVE_CYLINDER:
-                    SHAPE_ID = ShapeID::CYLINDER_ID;
-                    break;
-                case PrimitiveType::PRIMITIVE_SPHERE:
-                    SHAPE_ID = ShapeID::SPHERE_ID;
-                    break;
-                case PrimitiveType::PRIMITIVE_MUSHTOP:
-                    SHAPE_ID = ShapeID::MUSH_ID;
-                break;
-                default:
-                    continue;
-            }
-
-            glBindVertexArray(primitive_vaos[SHAPE_ID]);
-            glUniformMatrix4fv(glGetUniformLocation(m_shader, "modelMatrix"), 1, GL_FALSE, &(shape.ctm[0][0]));
-            glUniformMatrix3fv(glGetUniformLocation(m_shader, "normMatrix"), 1, GL_FALSE, &(shape.nictm[0][0]));
-
-            SceneMaterial& mat = shape.primitive.material;
-            glUniform4f(glGetUniformLocation(m_shader, "cAmbient"), mat.cAmbient.r, mat.cAmbient.g, mat.cAmbient.b, mat.cAmbient.a);
-            glUniform4f(glGetUniformLocation(m_shader, "cDiffuse"), mat.cDiffuse.r, mat.cDiffuse.g, mat.cDiffuse.b, mat.cDiffuse.a);
-            glUniform4f(glGetUniformLocation(m_shader, "cSpecular"), mat.cSpecular.r, mat.cSpecular.g, mat.cSpecular.b, mat.cSpecular.a);
-            glUniform1f(glGetUniformLocation(m_shader, "cShininess"), mat.shininess);
-            glUniform4f(glGetUniformLocation(m_shader, "cameraPos"), camPos.x, camPos.y, camPos.z, 1);
-            glUniform4f(glGetUniformLocation(m_shader, "fogColor"), fogColor.r, fogColor.g, fogColor.b, 1);
-            glUniform1f(glGetUniformLocation(m_shader, "fogMax"), 0.8 * settings.farPlane);
-            glUniform1f(glGetUniformLocation(m_shader, "fogMin"), settings.nearPlane);
-
-            glDrawArrays(GL_TRIANGLES, 0, primitive_data[SHAPE_ID].size() / 6);
-        }
+        if(mush != nullptr) drawShapes(mush->pieces);
     }
 
     glBindVertexArray(0);
@@ -321,7 +317,6 @@ void Realtime::paintGL() {
     glUniform1i(glGetUniformLocation(pp_shader, "boxBlur"), settings.kernelBasedFilter);
     glUniform1i(glGetUniformLocation(pp_shader, "sharpen"), settings.extraCredit2);
     glUniform1i(glGetUniformLocation(pp_shader, "pixels"), settings.pixelCount);
-    std::cout << settings.pixelate << std::endl;
     glUniform1i(glGetUniformLocation(pp_shader, "pixelate"), settings.pixelate);
 
     glBindVertexArray(screen_vao);
