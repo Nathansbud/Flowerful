@@ -14,7 +14,6 @@ std::mt19937 gen(rd());
 std::uniform_real_distribution<> f(0, 1);
 std::uniform_int_distribution<> colorIdx(0, props.size() - 1);
 
-
 MushroomData* SceneMaker::generateMushroom(int variant, float xOffset, float zOffset) {
     SceneMaterial shroomterial = SceneMaterial{
         .cAmbient = props[colorIdx(gen)],

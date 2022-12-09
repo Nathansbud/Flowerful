@@ -29,10 +29,18 @@ struct Light {
 uniform Light lights[8];
 uniform int numLights;
 
+uniform vec4 fogColor;
+uniform float fogMax;
+uniform float fogMin;
+
 void main() {
     fragColor = ka * cAmbient;
     vec3 normal = normalize(worldNormal);
-    vec3 directionToCamera = normalize(vec3(cameraPos) - worldPosition);
+
+    vec3 dtc = vec3(cameraPos) - worldPosition;
+    float lc = length(dtc);
+    vec3 directionToCamera = normalize(dtc);
+
     for(int i = 0; i < numLights; i++) {
         Light l = lights[i];
         // POINT (it fucked)
@@ -123,4 +131,6 @@ void main() {
     }
 
     fragColor[3] = 1;
+    float fogFactor = clamp((fogMax - lc) / (fogMax - fogMin), 0, 1);
+    fragColor = mix(fogColor, fragColor, fogFactor);
 }
