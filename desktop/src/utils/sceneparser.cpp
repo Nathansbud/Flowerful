@@ -75,7 +75,7 @@ bool loadImageFromFile(const std::string &filepath, TextureData& t) {
  * @param textures: Map to load textures into (filename -> texture)
  * @param shapes: Shapes to load textures from
  */
-bool loadTextures(std::map<std::string, TextureData>& textures, std::vector<RenderShapeData>& shapes) {
+bool SceneParser::loadTextures(std::map<std::string, TextureData>& textures, std::vector<RenderShapeData>& shapes) {
     for(RenderShapeData& s : shapes) {
         // if we haven't loaded a given texture, load it!
         std::string& fn = s.primitive.material.textureMap.filename;

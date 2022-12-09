@@ -1,4 +1,4 @@
-#include "mush.h"
+#include "Mushtop.h"
 
 void Mush::makeTile(glm::vec3 topLeft,
                       glm::vec3 topRight,

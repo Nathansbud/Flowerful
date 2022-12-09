@@ -17,7 +17,7 @@
 #include "./shapes/Cylinder.h"
 #include "./shapes/Shape.h"
 #include "./shapes/Sphere.h"
-#include "shapes/mush.h"
+#include "shapes/Mushtop.h"
 
 #include "./raytracer/raytracer.h"
 #include "./raytracer/raytracescene.h"
@@ -68,6 +68,8 @@ void Realtime::finish() {
     // clear fullscreen quad
     glDeleteVertexArrays(1, &screen_vao);
     glDeleteBuffers(1, &screen_vbo);
+
+    glDeleteTextures(1, &ground_texture);
 
     for(int i = 0; i < mushGrid.size(); i++) {
         if(mushGrid[i] != nullptr) delete mushGrid[i];
@@ -144,10 +146,27 @@ void Realtime::initializeGL() {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     refreshFBOs();
-    mushGrid = SceneMaker::generateScene(20, 4);
 
     settings.sceneFilepath = "../desktop/resources/scenefiles/flowerful.xml";
+
+    // populates renderData
     sceneChanged();
+
+    // populates mushrooms, loads additional textures
+    mushGrid = SceneMaker::generateScene(20, 4);
+
+    std::string path = "../desktop/resources/textures/forest/GroundForest003_COL_VAR1_1k.jpg";
+    TextureData& gt = renderData.textures.at(path);
+    // TODO: Parse additional textures from mushroom caps!
+
+    glGenTextures(1, &ground_texture);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, ground_texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, gt.width, gt.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, gt.textureMap.data());
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
 }
 
 void Realtime::refreshCamera() {
@@ -188,7 +207,7 @@ void Realtime::refreshShapes() {
                 primitive_data[i] = s.getVertexData();
                 break;
             }
-            case ShapeID::MUSH_ID: {
+            case ShapeID::MUSHTOP_ID: {
                 Mush s = Mush();
                 s.generateShape(p1, p2);
                 primitive_data[i] = s.getVertexData();
@@ -259,7 +278,7 @@ void Realtime::drawShapes(std::vector<RenderShapeData>& shapes) {
                 SHAPE_ID = ShapeID::SPHERE_ID;
                 break;
             case PrimitiveType::PRIMITIVE_MUSHTOP:
-                SHAPE_ID = ShapeID::MUSH_ID;
+                SHAPE_ID = ShapeID::MUSHTOP_ID;
             break;
             default:
                 continue;
@@ -375,7 +394,6 @@ void Realtime::resizeGL(int w, int h) {
 
     // clear FBO data
     glDeleteTextures(1, &pp_texture);
-//    glDeleteTextures(1, &pp_pixelation);
 
     glDeleteRenderbuffers(1, &pp_rbo);
     glDeleteFramebuffers(1, &pp_fbo);

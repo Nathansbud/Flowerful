@@ -59,8 +59,8 @@ add_executable(${PROJECT_NAME}
     src/shapes/Cylinder.h
     src/shapes/Sphere.cpp
     src/shapes/Sphere.h
-    src/shapes/mush.h
-    src/shapes/mush.cpp
+    src/shapes/Mushtop.h
+    src/shapes/Mushtop.cpp
 
     src/raytracer/intersect.h
     src/raytracer/raytracer.cpp

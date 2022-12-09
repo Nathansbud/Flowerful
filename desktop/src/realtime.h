@@ -29,7 +29,7 @@ enum ShapeID {
     SPHERE_ID = 1,
     CYLINDER_ID = 2,
     CONE_ID = 3,
-    MUSH_ID = 4,
+    MUSHTOP_ID = 4,
 };
 
 class Realtime : public QOpenGLWidget
@@ -101,6 +101,11 @@ private:
     // fullscreen quad
     GLuint screen_vbo;
     GLuint screen_vao;
+
+    // Textures
+    GLuint ground_texture;
+    int ground_texture_width;
+    int ground_texture_height;
 
     // movement globals
     float bpm;
