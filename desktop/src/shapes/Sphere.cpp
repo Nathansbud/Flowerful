@@ -9,21 +9,27 @@ void Sphere::makeTile(glm::vec3 topLeft,
     //       but the normals are calculated in a different way!
     insertVec3(m_vertexData, topLeft);
     insertVec3(m_vertexData, glm::normalize(topLeft));
+    insertVec2(m_vertexData, glm::vec2(0, 0));
 
     insertVec3(m_vertexData, bottomLeft);
     insertVec3(m_vertexData, glm::normalize(bottomLeft));
+    insertVec2(m_vertexData, glm::vec2(0, 0));
 
     insertVec3(m_vertexData, bottomRight);
     insertVec3(m_vertexData, glm::normalize(bottomRight));
+    insertVec2(m_vertexData, glm::vec2(0, 0));
 
     insertVec3(m_vertexData, topLeft);
     insertVec3(m_vertexData, glm::normalize(topLeft));
+    insertVec2(m_vertexData, glm::vec2(0, 0));
 
     insertVec3(m_vertexData, bottomRight);
     insertVec3(m_vertexData, glm::normalize(bottomRight));
+    insertVec2(m_vertexData, glm::vec2(0, 0));
 
     insertVec3(m_vertexData, topRight);
     insertVec3(m_vertexData, glm::normalize(topRight));
+    insertVec2(m_vertexData, glm::vec2(0, 0));
 }
 
 void Sphere::makeWedge(float currentTheta, float nextTheta) {

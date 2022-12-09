@@ -137,6 +137,7 @@ void Realtime::initializeGL() {
 
     glGenVertexArrays(1, &screen_vao);
     glBindVertexArray(screen_vao);
+
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), nullptr);
@@ -219,10 +220,14 @@ void Realtime::refreshShapes() {
         glBufferData(GL_ARRAY_BUFFER, primitive_data[i].size() * sizeof(GLfloat), primitive_data[i].data(), GL_STATIC_DRAW);
 
         glBindVertexArray(primitive_vaos[i]);
+
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), nullptr);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
+        glEnableVertexAttribArray(2);
+
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), nullptr);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(6 * sizeof(GLfloat)));
 
         glBindVertexArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -294,12 +299,12 @@ void Realtime::drawShapes(std::vector<RenderShapeData>& shapes) {
         glUniform4f(glGetUniformLocation(m_shader, "cSpecular"), mat.cSpecular.r, mat.cSpecular.g, mat.cSpecular.b, mat.cSpecular.a);
         glUniform1f(glGetUniformLocation(m_shader, "cShininess"), mat.shininess);
         glUniform4f(glGetUniformLocation(m_shader, "cameraPos"), camPos.x, camPos.y, camPos.z, 1);
-        glUniform4f(glGetUniformLocation(m_shader, "fogColor"), fogColor.r, fogColor.g, fogColor.b, 1);
-        glUniform1f(glGetUniformLocation(m_shader, "fogMax"), 0.8 * settings.farPlane);
-        glUniform1f(glGetUniformLocation(m_shader, "fogMin"), settings.nearPlane);
+        glUniform1i(glGetUniformLocation(m_shader, "textured"), mat.textureMap.isUsed);
 
-        glDrawArrays(GL_TRIANGLES, 0, primitive_data[SHAPE_ID].size() / 6);
+        glDrawArrays(GL_TRIANGLES, 0, primitive_data[SHAPE_ID].size() / 8);
     }
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void Realtime::paintGL() {
@@ -315,6 +320,9 @@ void Realtime::paintGL() {
     glUniform1f(glGetUniformLocation(m_shader, "ka"), renderData.globalData.ka);
     glUniform1f(glGetUniformLocation(m_shader, "kd"), renderData.globalData.kd);
     glUniform1f(glGetUniformLocation(m_shader, "ks"), renderData.globalData.ks);
+    glUniform4f(glGetUniformLocation(m_shader, "fogColor"), fogColor.r, fogColor.g, fogColor.b, 1);
+    glUniform1f(glGetUniformLocation(m_shader, "fogMax"), 0.8 * settings.farPlane);
+    glUniform1f(glGetUniformLocation(m_shader, "fogMin"), settings.nearPlane);
 
     drawShapes(renderData.shapes);
     for(MushroomData *mush : mushGrid) {
@@ -325,8 +333,6 @@ void Realtime::paintGL() {
         }
     }
 
-    glBindVertexArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
     glUseProgram(0);
 
 

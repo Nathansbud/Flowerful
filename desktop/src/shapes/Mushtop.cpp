@@ -10,21 +10,27 @@ void Mush::makeTile(glm::vec3 topLeft,
     float sign = under ? -1 : 1;
     insertVec3(m_vertexData, topLeft);
     insertVec3(m_vertexData, sign * glm::normalize(topLeft));
+    insertVec2(m_vertexData, glm::vec2(0, 0));
 
     insertVec3(m_vertexData, bottomLeft);
     insertVec3(m_vertexData, sign * glm::normalize(bottomLeft));
+    insertVec2(m_vertexData, glm::vec2(0, 0));
 
     insertVec3(m_vertexData, bottomRight);
     insertVec3(m_vertexData, sign * glm::normalize(bottomRight));
+    insertVec2(m_vertexData, glm::vec2(0, 0));
 
     insertVec3(m_vertexData, topLeft);
     insertVec3(m_vertexData, sign * glm::normalize(topLeft));
+    insertVec2(m_vertexData, glm::vec2(0, 0));
 
     insertVec3(m_vertexData, bottomRight);
     insertVec3(m_vertexData, sign * glm::normalize(bottomRight));
+    insertVec2(m_vertexData, glm::vec2(0, 0));
 
     insertVec3(m_vertexData, topRight);
     insertVec3(m_vertexData, sign * glm::normalize(topRight));
+    insertVec2(m_vertexData, glm::vec2(0, 0));
 }
 
 void Mush::makeWedge(float currentTheta, float nextTheta, float height) {

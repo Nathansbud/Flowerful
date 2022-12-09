@@ -13,21 +13,27 @@ void Cylinder::makeTile(
 
     insertVec3(m_vertexData, topLeft);
     insertVec3(m_vertexData, glm::normalize(topLeft) * zeroY);
+    insertVec2(m_vertexData, glm::vec2(0, 0));
 
     insertVec3(m_vertexData, bottomLeft);
     insertVec3(m_vertexData, glm::normalize(bottomLeft) * zeroY);
+    insertVec2(m_vertexData, glm::vec2(0, 0));
 
     insertVec3(m_vertexData, bottomRight);
     insertVec3(m_vertexData, glm::normalize(bottomRight) * zeroY);
+    insertVec2(m_vertexData, glm::vec2(0, 0));
 
     insertVec3(m_vertexData, topLeft);
     insertVec3(m_vertexData, glm::normalize(topLeft) * zeroY);
+    insertVec2(m_vertexData, glm::vec2(0, 0));
 
     insertVec3(m_vertexData, bottomRight);
     insertVec3(m_vertexData, glm::normalize(bottomRight) * zeroY);
+    insertVec2(m_vertexData, glm::vec2(0, 0));
 
     insertVec3(m_vertexData, topRight);
     insertVec3(m_vertexData, glm::normalize(topRight) * zeroY);
+    insertVec2(m_vertexData, glm::vec2(0, 0));
 }
 
 void Cylinder::makeCapPiece(
@@ -40,21 +46,27 @@ void Cylinder::makeCapPiece(
     glm::vec3 norm(0, 1 * (isTop ? 1 : -1), 0);
     insertVec3(m_vertexData, leftNext);
     insertVec3(m_vertexData, norm);
+    insertVec2(m_vertexData, glm::vec2(0, 0));
 
     insertVec3(m_vertexData, leftCurr);
     insertVec3(m_vertexData, norm);
+    insertVec2(m_vertexData, glm::vec2(0, 0));
 
     insertVec3(m_vertexData, rightNext);
     insertVec3(m_vertexData, norm);
+    insertVec2(m_vertexData, glm::vec2(0, 0));
 
     insertVec3(m_vertexData, leftCurr);
     insertVec3(m_vertexData, norm);
+    insertVec2(m_vertexData, glm::vec2(0, 0));
 
     insertVec3(m_vertexData, rightCurr);
     insertVec3(m_vertexData, norm);
+    insertVec2(m_vertexData, glm::vec2(0, 0));
 
     insertVec3(m_vertexData, rightNext);
     insertVec3(m_vertexData, norm);
+    insertVec2(m_vertexData, glm::vec2(0, 0));
 }
 
 void Cylinder::makeWall(float currentTheta, float nextTheta) {

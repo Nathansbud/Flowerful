@@ -2,9 +2,9 @@
 
 in vec3 worldPosition;
 in vec3 worldNormal;
+in vec2 uvPos;
 
 layout (location = 0) out vec4 fragColor;
-//layout (location = 1) out vec4 bloomColor;
 
 uniform float ka;
 uniform float kd;
@@ -16,7 +16,6 @@ uniform vec4 cSpecular;
 uniform float cShininess;
 
 uniform bool bloomable;
-
 uniform vec4 cameraPos;
 
 struct Light {
@@ -35,6 +34,8 @@ uniform int numLights;
 uniform vec4 fogColor;
 uniform float fogMax;
 uniform float fogMin;
+
+uniform bool textured;
 
 void main() {
     fragColor = ka * cAmbient;
@@ -137,4 +138,7 @@ void main() {
     float fogFactor = clamp((fogMax - lc) / (fogMax - fogMin), 0, 1);
     fragColor = mix(fogColor, fragColor, fogFactor);
 
+    if(textured) {
+        fragColor = vec4(uvPos.x, uvPos.y, 0, 1);
+    }
 }

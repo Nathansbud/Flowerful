@@ -27,21 +27,27 @@ void Cone::makeTile(
 
     insertVec3(m_vertexData, leftNext);
     insertVec3(m_vertexData, lnn);
+    insertVec2(m_vertexData, glm::vec2(0, 0));
 
     insertVec3(m_vertexData, leftCurr);
     insertVec3(m_vertexData, lcn);
+    insertVec2(m_vertexData, glm::vec2(0, 0));
 
     insertVec3(m_vertexData, rightNext);
     insertVec3(m_vertexData, rnn);
+    insertVec2(m_vertexData, glm::vec2(0, 0));
 
     insertVec3(m_vertexData, leftCurr);
     insertVec3(m_vertexData, lcn);
+    insertVec2(m_vertexData, glm::vec2(0, 0));
 
     insertVec3(m_vertexData, rightCurr);
     insertVec3(m_vertexData, rcn);
+    insertVec2(m_vertexData, glm::vec2(0, 0));
 
     insertVec3(m_vertexData, rightNext);
     insertVec3(m_vertexData, rnn);
+    insertVec2(m_vertexData, glm::vec2(0, 0));
 }
 
 void Cone::makeCapPiece(
@@ -53,21 +59,27 @@ void Cone::makeCapPiece(
     glm::vec3 norm(0, -1, 0);
     insertVec3(m_vertexData, leftNext);
     insertVec3(m_vertexData, norm);
+    insertVec2(m_vertexData, glm::vec2(0, 0));
 
     insertVec3(m_vertexData, leftCurr);
     insertVec3(m_vertexData, norm);
+    insertVec2(m_vertexData, glm::vec2(0, 0));
 
     insertVec3(m_vertexData, rightNext);
     insertVec3(m_vertexData, norm);
+    insertVec2(m_vertexData, glm::vec2(0, 0));
 
     insertVec3(m_vertexData, leftCurr);
     insertVec3(m_vertexData, norm);
+    insertVec2(m_vertexData, glm::vec2(0, 0));
 
     insertVec3(m_vertexData, rightCurr);
     insertVec3(m_vertexData, norm);
+    insertVec2(m_vertexData, glm::vec2(0, 0));
 
     insertVec3(m_vertexData, rightNext);
     insertVec3(m_vertexData, norm);
+    insertVec2(m_vertexData, glm::vec2(0, 0));
 }
 
 void Cone::makeWall(float currentTheta, float nextTheta) {

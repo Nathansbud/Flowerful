@@ -28,6 +28,14 @@ protected:
         data.push_back(v.y);
         data.push_back(v.z);
     };
+
+    void insertVec2(std::vector<float> &data, glm::vec2 v) {
+        data.push_back(v.x);
+        data.push_back(v.y);
+    };
+
+    static int wrappedMod(int a, int b) {return (b + (a % b)) % b;};
+
     std::vector<float> m_vertexData;
     int m_param1;
     int m_param2;  
