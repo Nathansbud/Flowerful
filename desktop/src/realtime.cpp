@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <string>
+#include <filesystem>
 
 #include "settings.h"
 #include "./shapes/Cone.h"
@@ -91,7 +92,8 @@ void Realtime::initializeGL() {
     std::cout << "Initialized GL: Version " << glewGetString(GLEW_VERSION) << std::endl;
 
     // Allows OpenGL to draw objects appropriately on top of one another
-    glClearColor(0, 0, 0, 1);
+    glClearColor(fogColor[0], fogColor[1], fogColor[2], fogColor[3]);
+
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
 
@@ -140,6 +142,9 @@ void Realtime::initializeGL() {
 
     refreshFBOs();
     mushGrid = SceneMaker::generateScene(20, 4);
+
+    settings.sceneFilepath = "../desktop/resources/scenefiles/flowerful.xml";
+    sceneChanged();
 }
 
 void Realtime::refreshCamera() {
@@ -231,6 +236,9 @@ void Realtime::loadLights() {
     glUniform1i(glGetUniformLocation(m_shader, "numLights"), dirNum);
 }
 
+
+
+
 void Realtime::paintGL() {
     glBindFramebuffer(GL_FRAMEBUFFER, pp_fbo);
     glViewport(0, 0, pp_fbo_width, pp_fbo_height);
@@ -245,6 +253,11 @@ void Realtime::paintGL() {
     glUniform1f(glGetUniformLocation(m_shader, "ka"), renderData.globalData.ka);
     glUniform1f(glGetUniformLocation(m_shader, "kd"), renderData.globalData.kd);
     glUniform1f(glGetUniformLocation(m_shader, "ks"), renderData.globalData.ks);
+
+//    for(RenderShapeData& shape : renderData.shapes) {
+
+
+//    }
 
     for(MushroomData* mush : mushGrid) {
         if(mush == nullptr) continue;
@@ -281,6 +294,9 @@ void Realtime::paintGL() {
             glUniform4f(glGetUniformLocation(m_shader, "cSpecular"), mat.cSpecular.r, mat.cSpecular.g, mat.cSpecular.b, mat.cSpecular.a);
             glUniform1f(glGetUniformLocation(m_shader, "cShininess"), mat.shininess);
             glUniform4f(glGetUniformLocation(m_shader, "cameraPos"), camPos.x, camPos.y, camPos.z, 1);
+            glUniform4f(glGetUniformLocation(m_shader, "fogColor"), fogColor.r, fogColor.g, fogColor.b, 1);
+            glUniform1f(glGetUniformLocation(m_shader, "fogMax"), 0.8 * settings.farPlane);
+            glUniform1f(glGetUniformLocation(m_shader, "fogMin"), settings.nearPlane);
 
             glDrawArrays(GL_TRIANGLES, 0, primitive_data[SHAPE_ID].size() / 6);
         }
