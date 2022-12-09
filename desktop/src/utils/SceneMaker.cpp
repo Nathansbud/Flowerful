@@ -6,13 +6,14 @@ const std::vector<glm::vec4> props = {
     glm::vec4(0, 0, 1, 1),
     glm::vec4(0.5, 0.5, 0.5, 1),
     glm::vec4(0.5, 0.5, 0, 1),
-    glm::vec4(0.1, 0, 0, 1)
+    //glm::vec4(0.1, 0, 0, 1)
 };
 
 std::random_device rd;
 std::mt19937 gen(rd());
 std::uniform_real_distribution<> f(0, 1);
 std::uniform_int_distribution<> colorIdx(0, props.size() - 1);
+std::uniform_int_distribution<> mushIdx(0, 3);
 
 MushroomData* SceneMaker::generateMushroom(int variant, float xOffset, float zOffset) {
     SceneMaterial shroomterial = SceneMaterial{
@@ -31,30 +32,59 @@ MushroomData* SceneMaker::generateMushroom(int variant, float xOffset, float zOf
 
     MushroomData* mushroom = nullptr;
 
-    ScenePrimitive mushtop1_prim = ScenePrimitive{.type=PrimitiveType::PRIMITIVE_MUSHTOP, .material = shroomterial};
-    ScenePrimitive mushstem1_prim = ScenePrimitive{.type=PrimitiveType::PRIMITIVE_CYLINDER, .material = stemterial};
+    // make primitives
+    ScenePrimitive mushtop_prim = ScenePrimitive{.type=PrimitiveType::PRIMITIVE_MUSHTOP, .material = shroomterial};
+    ScenePrimitive mushstem_prim = ScenePrimitive{.type=PrimitiveType::PRIMITIVE_CYLINDER, .material = stemterial};
 
+    // make shrinking matrix
     glm::mat4 scaleall = glm::mat4({0.2, 0, 0, 0}, {0, 0.2, 0, 0}, {0, 0, 0.2, 0}, {0, 0, 0, 1});
 
-    glm::mat4 ctm = glm::mat4({1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {xOffset, 0.4, zOffset, 1});
+    float h = heights[variant];
+    float cw = capwidths[variant];
+    float ch = capheights[variant];
+    // init cap ctms
+
+    glm::mat4 ctm_var4;
+    glm::mat4 ictm_var4;
+    glm::mat4 nictm_var4;
+    RenderShapeData mushtop_var4;
+
+    glm::mat4 ctm = glm::mat4({cw, 0, 0, 0}, {0, ch, 0, 0}, {0, 0, cw, 0}, {xOffset, h, zOffset, 1});
     glm::mat4 ictm = glm::inverse(ctm);
     glm::mat4 nictm = glm::inverse(glm::transpose(glm::mat3(ctm)));
 
-    RenderShapeData mushtop1 = RenderShapeData{.primitive = mushtop1_prim, .ctm = scaleall * ctm, .ictm = ictm, .nictm = nictm};
+    RenderShapeData mushtop = RenderShapeData{.primitive = mushtop_prim, .ctm = scaleall * ctm, .ictm = ictm, .nictm = nictm};
 
-    glm::mat4 sctm = glm::mat4({1.0/3.0, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1.0/3.0, 0}, {xOffset, 0, zOffset, 1});
+    // init stem ctms
+    glm::mat4 sctm = glm::mat4({1/3.0, 0, 0, 0}, {0, h, 0, 0}, {0, 0, 1/3.0, 0}, {xOffset, h/2, zOffset, 1});
     glm::mat4 sictm = glm::inverse(sctm);
     glm::mat4 snictm = glm::inverse(glm::transpose(glm::mat3(sctm)));
 
-    RenderShapeData mushstem1 = RenderShapeData{
-        .primitive = mushstem1_prim,
+    RenderShapeData mushstem = RenderShapeData{
+        .primitive = mushstem_prim,
         .ctm = scaleall * sctm,
         .ictm = sictm,
         .nictm = snictm
     };
 
+    // make the mushroom
     mushroom = new MushroomData;
-    mushroom->pieces = std::vector<RenderShapeData>{mushtop1, mushstem1};
+    mushroom->pieces = std::vector<RenderShapeData>{mushtop, mushstem};
+
+    // extra hat!
+    if(variant == 3)  {
+        ctm_var4 = glm::mat4({cw/2, 0, 0, 0}, {0, ch, 0, 0}, {0, 0, cw/2, 0}, {xOffset, h + 0.8 * ch/2, zOffset, 1});
+        ictm_var4 = glm::inverse(ctm_var4);
+        nictm_var4 = glm::inverse(glm::transpose(glm::mat3(ctm_var4)));
+        RenderShapeData mushtop_var4 = RenderShapeData{
+                .primitive = mushtop_prim,
+                .ctm = scaleall * ctm_var4,
+                .ictm = ictm_var4,
+                .nictm = nictm_var4
+        };
+        mushroom->pieces.push_back(mushtop_var4);
+    }
+
     return mushroom;
 }
 
@@ -65,7 +95,7 @@ std::vector<MushroomData*> SceneMaker::generateScene(int gridLength, int gridDis
     for(int i = -hgl; i < hgl; i++) {
         for(int j = -hgl; j < hgl; j++) {
             mushGrid[(i + hgl) * gridLength + (j + hgl)] = SceneMaker::generateMushroom(
-                1,
+                mushIdx(gen),
                 gridDistance * i + gridOffset(gen),
                 gridDistance * j + gridOffset(gen)
             );
