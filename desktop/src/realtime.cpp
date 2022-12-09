@@ -504,18 +504,18 @@ void Realtime::timerEvent(QTimerEvent *event) {
 
     // bpm = 60; start at 15 at 0 beats, want to get to -15 in 1 beat
     // 1 beat per second --> 30 deg / second --> 30 * delta time
-    float maxhop = 2;
+    float maxhop = 0.2;
     float bps = bpm * (1.0/60.0);
 
     rotate_angle = 90 * bps * deltaTime;
 
     if(translate_increase) {
-        translate = bps * deltaTime * 1.;
-        translate_total += bps * deltaTime * 1.;
+        translate = fmin(bps * deltaTime * maxhop, maxhop-translate_total);
+        translate_total += translate;
     }
     else {
-        translate = -bps * deltaTime * 1.;
-        translate_total -= bps * deltaTime * 1.;
+        translate = fmax(-bps * deltaTime * maxhop, -maxhop-translate_total);
+        translate_total += translate;
     }
 
     if(fabs(translate_total) >= maxhop) translate_increase = !translate_increase;

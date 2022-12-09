@@ -37,7 +37,7 @@ MushroomData* SceneMaker::generateMushroom(int variant, float xOffset, float zOf
     ScenePrimitive mushstem_prim = ScenePrimitive{.type=PrimitiveType::PRIMITIVE_CYLINDER, .material = stemterial};
 
     // make shrinking matrix
-    glm::mat4 scaleall = glm::mat4({1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1});
+    glm::mat4 scaleall = glm::mat4({0.2, 0, 0, 0}, {0, 0.2, 0, 0}, {0, 0, 0.2, 0}, {0, 0, 0, 1});
 
     float h = heights[variant];
     float cw = capwidths[variant];
