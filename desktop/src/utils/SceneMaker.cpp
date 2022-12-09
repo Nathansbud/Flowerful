@@ -105,4 +105,24 @@ std::vector<MushroomData*> SceneMaker::generateScene(int gridLength, int gridDis
     return mushGrid;
 }
 
+void SceneMaker::rotateMushroom(MushroomData* shroom, glm::vec4 look, float angle) {
+    angle = glm::radians(angle);
+    float c = cos(angle);
+    float s = sin(angle);
+    float x = look[0];
+    float y = look[1];
+    float z = look[2];
+    glm::mat4 rotate = glm::mat4({(c + x*x*(1-c)), (x*y*(1-c)+z*s), (x*z*(1-c) - y*s), 0},
+                                 {(x*y*(1-c)+z*s), (c + y*y*(1-c)), (y*z*(1-c) - x*s), 0},
+                                 {(x*z*(1-c)+y*s), (y*z*(1-c) - x*s), (c + z*z*(1-c)), 0},
+                                 {0, 0, 0, 1});
+
+    for (int i = 0; i < (shroom->pieces).size(); i++) {
+        glm::mat4 newctm = shroom->pieces[i].ctm * rotate;
+        shroom->pieces[i].ctm = newctm;
+        shroom->pieces[i].ictm = glm::inverse(newctm),
+        shroom->pieces[i].nictm = glm::inverse(newctm);
+    }
+}
+
 

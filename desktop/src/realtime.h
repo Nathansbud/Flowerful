@@ -102,6 +102,12 @@ private:
     GLuint screen_vbo;
     GLuint screen_vao;
 
+    // movement globals
+    float bpm;
+    float rotate_angle;
+    float rotate_total;
+    bool rotate_increase = true;
+
     // fullscreen quad with
     std::vector<GLfloat> screen_quad = {
           -1, 1, 0,     0, 1,

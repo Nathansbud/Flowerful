@@ -111,6 +111,8 @@ void Realtime::initializeGL() {
         ":/resources/shaders/texture.frag"
     );
 
+    bpm = 60;
+
     pp_fbo_default = 2;
     pp_fbo_width = size().width() * m_devicePixelRatio;
     pp_fbo_height = size().height() * m_devicePixelRatio;
@@ -240,6 +242,7 @@ void Realtime::loadLights() {
 
 void Realtime::drawShapes(std::vector<RenderShapeData>& shapes) {
     glm::vec4 camPos = camera.getWorldPosition();
+
     for(RenderShapeData& shape : shapes) {
         int SHAPE_ID = 0;
         switch(shape.primitive.type) {
@@ -295,8 +298,11 @@ void Realtime::paintGL() {
     glUniform1f(glGetUniformLocation(m_shader, "ks"), renderData.globalData.ks);
 
     drawShapes(renderData.shapes);
-    for(MushroomData* mush : mushGrid) {
-        if(mush != nullptr) drawShapes(mush->pieces);
+    for(MushroomData *mush : mushGrid) {
+        if(mush != nullptr) {
+            SceneMaker::rotateMushroom(mush, camera.getLook(), rotate_angle);
+            drawShapes(mush->pieces);
+        }
     }
 
     glBindVertexArray(0);
@@ -494,6 +500,22 @@ void Realtime::timerEvent(QTimerEvent *event) {
     }
 
     camera.move(W * 1 + S * -1, A * -1 + D * 1, SPACE * 1 + CTRL * -1, 5 * deltaTime);
+
+    // bpm = 60; start at 15 at 0 beats, want to get to -15 in 1 beat
+    // 1 beat per second --> 30 deg / second --> 30 * delta time
+    int amplitude = 15;
+
+    if(rotate_increase) {
+        rotate_angle = 5*deltaTime;
+        rotate_total += 5*deltaTime;
+    }
+    else {
+        rotate_angle = -5*deltaTime;
+        rotate_total -= 5*deltaTime;
+    }
+
+    if (fabs(rotate_total) >= amplitude) rotate_increase = !rotate_increase;
+
 
     update(); // asks for a PaintGL() call to occur
 }
