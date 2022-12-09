@@ -117,6 +117,7 @@ void Realtime::initializeGL() {
 
     glUseProgram(pp_shader);
     glUniform1i(glGetUniformLocation(pp_shader, "tex"), 0);
+    glUniform1i(glGetUniformLocation(pp_shader, "bloom"), 1);
     glUseProgram(0);
 
     // generate vbo buffers
@@ -303,7 +304,9 @@ void Realtime::paintGL() {
     }
 
     glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
     glUseProgram(0);
+
 
     // bind default FBO after rendering shapes
     glBindFramebuffer(GL_FRAMEBUFFER, pp_fbo_default);
@@ -335,6 +338,7 @@ void Realtime::paintGL() {
     glUseProgram(0);
 }
 
+
 void Realtime::refreshFBOs() {
     glGenTextures(1, &pp_texture);
 
@@ -356,6 +360,7 @@ void Realtime::refreshFBOs() {
     glGenFramebuffers(1, &pp_fbo);
     glBindFramebuffer(GL_FRAMEBUFFER, pp_fbo);
 
+    // attatch both textures to the framebuffer pp_fbo
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pp_texture, 0);
 
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, pp_rbo);

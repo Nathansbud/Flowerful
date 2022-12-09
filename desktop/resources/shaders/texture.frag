@@ -2,6 +2,7 @@
 
 in vec2 uvPos;
 uniform sampler2D tex;
+//uniform sampler2D bloom;
 
 uniform bool invert;
 uniform bool greyscale;

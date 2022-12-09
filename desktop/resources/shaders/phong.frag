@@ -3,7 +3,8 @@
 in vec3 worldPosition;
 in vec3 worldNormal;
 
-out vec4 fragColor;
+layout (location = 0) out vec4 fragColor;
+//layout (location = 1) out vec4 bloomColor;
 
 uniform float ka;
 uniform float kd;
@@ -13,6 +14,8 @@ uniform vec4 cAmbient;
 uniform vec4 cDiffuse;
 uniform vec4 cSpecular;
 uniform float cShininess;
+
+uniform bool bloomable;
 
 uniform vec4 cameraPos;
 
@@ -133,4 +136,5 @@ void main() {
     fragColor[3] = 1;
     float fogFactor = clamp((fogMax - lc) / (fogMax - fogMin), 0, 1);
     fragColor = mix(fogColor, fragColor, fogFactor);
+
 }
