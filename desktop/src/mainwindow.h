@@ -31,6 +31,7 @@ private:
 
     // Flowerful Connectors
     void connectPixel();
+    void connectPixelate();
     void connectUploadSong();
     void connectVolume();
 
@@ -57,6 +58,7 @@ private:
     // Flowerful UI
     QSlider *pixelSlider;
     QSpinBox *pixelBox;
+    QCheckBox *pixelate;
 
     QPushButton *uploadSong;
     QCheckBox *loop;
@@ -84,6 +86,7 @@ private slots:
     // Flowerful Slots
     void onValChangePixelSlider(int newValue);
     void onValChangePixelBox(int newValue);
+    void onPixelate();
 
     void onUploadSong();
 

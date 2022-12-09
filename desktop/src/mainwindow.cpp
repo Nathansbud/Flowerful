@@ -208,7 +208,11 @@ void MainWindow::initialize() {
     pixelBox->setSingleStep(1);
     pixelBox->setValue(64);
 
+    pixelate = new QCheckBox();
+    pixelate->setChecked(settings.pixelate);
+
     // Adds the slider and number box to the parameter layouts
+    lpix->addWidget(pixelate);
     lpix->addWidget(pixelSlider);
     lpix->addWidget(pixelBox);
     pixelLayout->setLayout(lpix);
@@ -294,6 +298,12 @@ void MainWindow::connectPixel() {
     connect(pixelSlider, &QSlider::valueChanged, this, &MainWindow::onValChangePixelSlider);
     connect(pixelBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
             this, &MainWindow::onValChangePixelBox);
+    connect(pixelate, &QCheckBox::clicked, this, &MainWindow::onPixelate);
+}
+
+void MainWindow::onPixelate() {
+    settings.pixelate = !settings.pixelate;
+    realtime->settingsChanged();
 }
 
 void MainWindow::onValChangePixelSlider(int newValue) {

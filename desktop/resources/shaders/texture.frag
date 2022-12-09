@@ -12,11 +12,16 @@ uniform bool boxBlur;
 uniform int width;
 uniform int height;
 
+uniform bool pixelate;
 uniform int pixels;
 
 out vec4 fragColor;
 
 void main() {
-    vec2 uvPrime = floor(uvPos * pixels) / pixels;
-    fragColor = texture(tex, uvPrime);
+    if(pixelate) {
+        vec2 uvPrime = floor(uvPos * pixels) / pixels;
+        fragColor = texture(tex, uvPrime);
+    } else {
+        fragColor = texture(tex, uvPos);
+    }
 }

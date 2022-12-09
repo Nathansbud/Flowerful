@@ -321,6 +321,8 @@ void Realtime::paintGL() {
     glUniform1i(glGetUniformLocation(pp_shader, "boxBlur"), settings.kernelBasedFilter);
     glUniform1i(glGetUniformLocation(pp_shader, "sharpen"), settings.extraCredit2);
     glUniform1i(glGetUniformLocation(pp_shader, "pixels"), settings.pixelCount);
+    std::cout << settings.pixelate << std::endl;
+    glUniform1i(glGetUniformLocation(pp_shader, "pixelate"), settings.pixelate);
 
     glBindVertexArray(screen_vao);
 
