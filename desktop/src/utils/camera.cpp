@@ -111,6 +111,13 @@ void Camera::rotate(float deltaX, float deltaY) {
     }
 }
 
+void Camera::cinematic(float forward, float timeStep) {
+    if(this->initialized && forward != 0) {
+        this->pos += timeStep * forward * glm::vec4(0, 0, 1, 0);
+        computeView();
+    }
+}
+
 void Camera::move(float lf, float uf, float vf, float timeStep) {
     if(!this->initialized) return;
     if(lf != 0 || uf != 0 || vf != 0) {

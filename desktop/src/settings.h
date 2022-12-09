@@ -9,6 +9,7 @@ struct Settings {
     int songVolume = 50;
     int pixelCount = 128;
     bool pixelate = true;
+    bool cinematic = true;
 
     // Realtime Settings
     std::string sceneFilepath;

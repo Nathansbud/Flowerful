@@ -15,14 +15,14 @@ void MainWindow::initialize() {
     QHBoxLayout *hLayout = new QHBoxLayout; // horizontal alignment
 
     QVBoxLayout *vLayout = new QVBoxLayout(); // vertical alignment
-    QVBoxLayout *mediaControls = new QVBoxLayout();
+    QVBoxLayout *flowerControls = new QVBoxLayout();
 
     vLayout->setAlignment(Qt::AlignTop);
-    mediaControls->setAlignment(Qt::AlignTop);
+    flowerControls->setAlignment(Qt::AlignTop);
 
     hLayout->addLayout(vLayout);
     hLayout->addWidget(realtime, 1);
-    hLayout->addLayout(mediaControls);
+    hLayout->addLayout(flowerControls);
 
     this->setLayout(hLayout);
 
@@ -188,7 +188,10 @@ void MainWindow::initialize() {
     vLayout->addWidget(ec4);
     vLayout->addWidget(raytrace);
 
-    // Media Controls
+    cinematic = new QCheckBox();
+    cinematic->setText(QStringLiteral("Cinematic Camera"));
+    cinematic->setChecked(settings.cinematic);
+
     QLabel *pixel_label = new QLabel();
     pixel_label->setText("Pixel Count");
     pixel_label->setFont(font);
@@ -248,12 +251,13 @@ void MainWindow::initialize() {
     lvol->addWidget(volumeBox);
     volumeLayout->setLayout(lvol);
 
-    mediaControls->addWidget(pixel_label);
-    mediaControls->addWidget(pixelLayout);
-    mediaControls->addWidget(uploadSong);
-    mediaControls->addWidget(loop);
-    mediaControls->addWidget(volume_label);
-    mediaControls->addWidget(volumeLayout);
+    flowerControls->addWidget(cinematic);
+    flowerControls->addWidget(pixel_label);
+    flowerControls->addWidget(pixelLayout);
+    flowerControls->addWidget(uploadSong);
+    flowerControls->addWidget(loop);
+    flowerControls->addWidget(volume_label);
+    flowerControls->addWidget(volumeLayout);
 
     connectUIElements();
 }
@@ -277,6 +281,7 @@ void MainWindow::connectUIElements() {
 
     // Flowerful UI
     connectPixel();
+    connectCinematic();
     connectUploadSong();
     connectVolume();
 //    connectMute();
@@ -307,6 +312,15 @@ void MainWindow::onValChangePixelSlider(int newValue) {
 void MainWindow::onValChangePixelBox(int newValue) {
     pixelSlider->setValue(newValue);
     settings.pixelCount = pixelBox->value();
+    realtime->settingsChanged();
+}
+
+void MainWindow::connectCinematic() {
+    connect(cinematic, &QCheckBox::clicked, this, &MainWindow::onCinematic);
+}
+
+void MainWindow::onCinematic() {
+    settings.cinematic = !settings.cinematic;
     realtime->settingsChanged();
 }
 

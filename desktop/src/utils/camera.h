@@ -30,6 +30,8 @@ public:
 
     void updateFrustum(float width, float height, float near, float far);
     void move(float alongLook, float alongClup, float alongVert, float timeStep);
+    void cinematic(float forward, float timeStep);
+
     void rotate(float deltaX, float deltaY);
     void reset();
 private:

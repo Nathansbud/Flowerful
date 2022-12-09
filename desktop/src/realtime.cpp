@@ -494,13 +494,17 @@ void Realtime::timerEvent(QTimerEvent *event) {
     bool CTRL = m_keyMap[Qt::Key_Control];
     bool SPACE = m_keyMap[Qt::Key_Space];
 
-    if(pendingRotX != 0 || pendingRotY != 0) {
+    if(!settings.cinematic && (pendingRotX != 0 || pendingRotY != 0)) {
         camera.rotate(pendingRotX, pendingRotY);
         pendingRotX = 0;
         pendingRotY = 0;
     }
 
-    camera.move(W * 1 + S * -1, A * -1 + D * 1, SPACE * 1 + CTRL * -1, 5 * deltaTime);
+    if(!settings.cinematic) {
+        camera.move(W * 1 + S * -1, A * -1 + D * 1, SPACE * 1 + CTRL * -1, 5 * deltaTime);
+    } else {
+        camera.cinematic(W + -S, 5 * deltaTime);
+    }
 
     // bpm = 60; start at 15 at 0 beats, want to get to -15 in 1 beat
     // 1 beat per second --> 30 deg / second --> 30 * delta time
