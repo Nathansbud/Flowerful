@@ -502,33 +502,23 @@ void Realtime::timerEvent(QTimerEvent *event) {
 
     camera.move(W * 1 + S * -1, A * -1 + D * 1, SPACE * 1 + CTRL * -1, 5 * deltaTime);
 
-    // bpm = 144; every bps (in seconds) we want to hit a beat; so basically up or down.
-    // if we want to travel 1 unit in that time, that gives us 1 unit in 1 bps; so 1 unit in
-    // 60/144 seconds, so 144/60 units per second. so: bps units * deltaTime seconds = how manny units we should travel
-    // in one call to timer. However, we also want to make sure that if
-    // deltaTime is also in seconds. to hit a beat every second, we want to translate up by
-    //
-    float maxhop = 1;
+    // bpm = 60; start at 15 at 0 beats, want to get to -15 in 1 beat
+    // 1 beat per second --> 30 deg / second --> 30 * delta time
+    float maxhop = 2;
     float bps = bpm * (1.0/60.0);
 
-    rotate_angle = 90. * bps * deltaTime;
+    rotate_angle = 90 * bps * deltaTime;
 
     if(translate_increase) {
-        translate = bps * deltaTime;
-        if(translate_total + translate >= maxhop) {
-            translate = maxhop - translate_total;
-            translate_total = maxhop;
-            translate_increase = false;
-        } else translate_total += translate;
+        translate = bps * deltaTime * 1.;
+        translate_total += bps * deltaTime * 1.;
     }
-    else if(!translate_increase){
-        translate = -bps * deltaTime;
-        if(translate_total + translate <= -maxhop) {
-            translate = -maxhop - translate_total;
-            translate_total = -maxhop;
-            translate_increase = true;
-        } else translate_total += translate;
+    else {
+        translate = -bps * deltaTime * 1.;
+        translate_total -= bps * deltaTime * 1.;
     }
+
+    if(fabs(translate_total) >= maxhop) translate_increase = !translate_increase;
 
     update(); // asks for a PaintGL() call to occur
 }
