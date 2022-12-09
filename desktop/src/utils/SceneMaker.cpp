@@ -37,7 +37,7 @@ MushroomData* SceneMaker::generateMushroom(int variant, float xOffset, float zOf
     ScenePrimitive mushstem_prim = ScenePrimitive{.type=PrimitiveType::PRIMITIVE_CYLINDER, .material = stemterial};
 
     // make shrinking matrix
-    glm::mat4 scaleall = glm::mat4({0.2, 0, 0, 0}, {0, 0.2, 0, 0}, {0, 0, 0.2, 0}, {0, 0, 0, 1});
+    glm::mat4 scaleall = glm::mat4({1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1});
 
     float h = heights[variant];
     float cw = capwidths[variant];
@@ -50,6 +50,7 @@ MushroomData* SceneMaker::generateMushroom(int variant, float xOffset, float zOf
     RenderShapeData mushtop_var4;
 
     glm::mat4 ctm = glm::mat4({cw, 0, 0, 0}, {0, ch, 0, 0}, {0, 0, cw, 0}, {xOffset, h, zOffset, 1});
+    if(variant == 2) ctm = glm::mat4({cw, 0, 0, 0}, {0, ch, 0, 0}, {0, 0, cw, 0}, {xOffset, h - 2, zOffset, 1});
     glm::mat4 ictm = glm::inverse(ctm);
     glm::mat4 nictm = glm::inverse(glm::transpose(glm::mat3(ctm)));
 
@@ -57,6 +58,7 @@ MushroomData* SceneMaker::generateMushroom(int variant, float xOffset, float zOf
 
     // init stem ctms
     glm::mat4 sctm = glm::mat4({1/3.0, 0, 0, 0}, {0, h, 0, 0}, {0, 0, 1/3.0, 0}, {xOffset, h/2, zOffset, 1});
+    if(variant == 2) sctm = glm::mat4({1/3.0, 0, 0, 0}, {0, h, 0, 0}, {0, 0, 1/3.0, 0}, {xOffset, h/2 - 2, zOffset, 1});
     glm::mat4 sictm = glm::inverse(sctm);
     glm::mat4 snictm = glm::inverse(glm::transpose(glm::mat3(sctm)));
 
@@ -85,6 +87,8 @@ MushroomData* SceneMaker::generateMushroom(int variant, float xOffset, float zOf
         mushroom->pieces.push_back(mushtop_var4);
     }
 
+    mushroom->variant = variant;
+
     return mushroom;
 }
 
@@ -109,19 +113,37 @@ void SceneMaker::rotateMushroom(MushroomData* shroom, glm::vec4 look, float angl
     angle = glm::radians(angle);
     float c = cos(angle);
     float s = sin(angle);
-    float x = look[0];
-    float y = look[1];
-    float z = look[2];
+    float x = 0; //look[0];
+    float y = 1; //look[1];
+    float z = 0; //look[2];
     glm::mat4 rotate = glm::mat4({(c + x*x*(1-c)), (x*y*(1-c)+z*s), (x*z*(1-c) - y*s), 0},
                                  {(x*y*(1-c)+z*s), (c + y*y*(1-c)), (y*z*(1-c) - x*s), 0},
                                  {(x*z*(1-c)+y*s), (y*z*(1-c) - x*s), (c + z*z*(1-c)), 0},
                                  {0, 0, 0, 1});
 
     for (int i = 0; i < (shroom->pieces).size(); i++) {
-        glm::mat4 newctm = shroom->pieces[i].ctm * rotate;
+        glm::mat4 oldctm = shroom->pieces[i].ctm;
+        //float offZ = shroom->pieces[i].ctm[3][2];
+        //glm::mat4 scale = glm::mat4({oldctm[0][0], 0, 0, 0}, {0, oldctm[1][1], 0, 0}, {0, 0, oldctm[2][2], 0}, {0, 0, 0, 1});
+        //glm::mat4 detranslate = glm::mat4({1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {-shroom->xOff, -shroom->yOff, -shroom->zOff, 1});
+        //glm::mat4 retranslate = glm::mat4({1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {shroom->xOff, shroom->yOff, shroom->zOff, 1});
+        if(shroom->pieces[i].primitive.type == PrimitiveType::PRIMITIVE_MUSHTOP) {
+            glm::mat4 newctm = oldctm * rotate;
+            shroom->pieces[i].ctm = newctm;
+            shroom->pieces[i].ictm = glm::inverse(newctm),
+            shroom->pieces[i].nictm = glm::inverse(glm::transpose(newctm));
+        }
+    }
+}
+
+void SceneMaker::translateMushroom(MushroomData* shroom, float y) {
+    glm::mat4 translate = glm::mat4({1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, y, 0, 1});
+    for (int i = 0; i < (shroom->pieces).size(); i++) {
+        glm::mat4 oldctm = shroom->pieces[i].ctm;
+        glm::mat4 newctm = translate * oldctm;
         shroom->pieces[i].ctm = newctm;
         shroom->pieces[i].ictm = glm::inverse(newctm),
-        shroom->pieces[i].nictm = glm::inverse(newctm);
+        shroom->pieces[i].nictm = glm::inverse(glm::transpose(newctm));
     }
 }
 

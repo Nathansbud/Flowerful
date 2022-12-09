@@ -111,7 +111,7 @@ void Realtime::initializeGL() {
         ":/resources/shaders/texture.frag"
     );
 
-    bpm = 60;
+    bpm = 144;
 
     pp_fbo_default = 2;
     pp_fbo_width = size().width() * m_devicePixelRatio;
@@ -300,7 +300,8 @@ void Realtime::paintGL() {
     drawShapes(renderData.shapes);
     for(MushroomData *mush : mushGrid) {
         if(mush != nullptr) {
-            SceneMaker::rotateMushroom(mush, camera.getLook(), rotate_angle);
+            if(mush->variant == 3) SceneMaker::rotateMushroom(mush, camera.getLook(), rotate_angle);
+            if(mush->variant == 2) SceneMaker::translateMushroom(mush, translate);
             drawShapes(mush->pieces);
         }
     }
@@ -501,21 +502,33 @@ void Realtime::timerEvent(QTimerEvent *event) {
 
     camera.move(W * 1 + S * -1, A * -1 + D * 1, SPACE * 1 + CTRL * -1, 5 * deltaTime);
 
-    // bpm = 60; start at 15 at 0 beats, want to get to -15 in 1 beat
-    // 1 beat per second --> 30 deg / second --> 30 * delta time
-    int amplitude = 15;
+    // bpm = 144; every bps (in seconds) we want to hit a beat; so basically up or down.
+    // if we want to travel 1 unit in that time, that gives us 1 unit in 1 bps; so 1 unit in
+    // 60/144 seconds, so 144/60 units per second. so: bps units * deltaTime seconds = how manny units we should travel
+    // in one call to timer. However, we also want to make sure that if
+    // deltaTime is also in seconds. to hit a beat every second, we want to translate up by
+    //
+    float maxhop = 1;
+    float bps = bpm * (1.0/60.0);
 
-    if(rotate_increase) {
-        rotate_angle = 5*deltaTime;
-        rotate_total += 5*deltaTime;
+    rotate_angle = 90. * bps * deltaTime;
+
+    if(translate_increase) {
+        translate = bps * deltaTime;
+        if(translate_total + translate >= maxhop) {
+            translate = maxhop - translate_total;
+            translate_total = maxhop;
+            translate_increase = false;
+        } else translate_total += translate;
     }
-    else {
-        rotate_angle = -5*deltaTime;
-        rotate_total -= 5*deltaTime;
+    else if(!translate_increase){
+        translate = -bps * deltaTime;
+        if(translate_total + translate <= -maxhop) {
+            translate = -maxhop - translate_total;
+            translate_total = -maxhop;
+            translate_increase = true;
+        } else translate_total += translate;
     }
-
-    if (fabs(rotate_total) >= amplitude) rotate_increase = !rotate_increase;
-
 
     update(); // asks for a PaintGL() call to occur
 }

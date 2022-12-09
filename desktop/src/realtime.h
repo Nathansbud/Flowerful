@@ -105,8 +105,9 @@ private:
     // movement globals
     float bpm;
     float rotate_angle;
-    float rotate_total;
-    bool rotate_increase = true;
+    float translate;
+    float translate_total;
+    bool translate_increase = true;
 
     // fullscreen quad with
     std::vector<GLfloat> screen_quad = {
