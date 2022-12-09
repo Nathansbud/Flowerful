@@ -7,15 +7,17 @@ struct Settings {
     // Flowerful Settings
     std::string songFilepath;
     int songVolume = 50;
-    int pixelCount = 64;
+    int pixelCount = 128;
     bool pixelate = true;
 
     // Realtime Settings
     std::string sceneFilepath;
-    int shapeParameter1 = 1;
-    int shapeParameter2 = 1;
-    float nearPlane = 1;
-    float farPlane = 1;
+    int shapeParameter1 = 4;
+    int shapeParameter2 = 6;
+
+    float nearPlane = 0.1;
+    float farPlane = 15;
+
     bool perPixelFilter = false;
     bool kernelBasedFilter = false;
     bool extraCredit1 = false;

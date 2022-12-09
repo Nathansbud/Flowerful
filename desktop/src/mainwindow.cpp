@@ -76,25 +76,25 @@ void MainWindow::initialize() {
     p1Slider->setTickInterval(1);
     p1Slider->setMinimum(1);
     p1Slider->setMaximum(25);
-    p1Slider->setValue(1);
+    p1Slider->setValue(settings.shapeParameter1);
 
     p1Box = new QSpinBox();
     p1Box->setMinimum(1);
     p1Box->setMaximum(25);
     p1Box->setSingleStep(1);
-    p1Box->setValue(1);
+    p1Box->setValue(settings.shapeParameter1);
 
     p2Slider = new QSlider(Qt::Orientation::Horizontal); // Parameter 2 slider
     p2Slider->setTickInterval(1);
     p2Slider->setMinimum(1);
     p2Slider->setMaximum(25);
-    p2Slider->setValue(1);
+    p2Slider->setValue(settings.shapeParameter2);
 
     p2Box = new QSpinBox();
     p2Box->setMinimum(1);
     p2Box->setMaximum(25);
     p2Box->setSingleStep(1);
-    p2Box->setValue(1);
+    p2Box->setValue(settings.shapeParameter2);
 
     // Adds the slider and number box to the parameter layouts
     l1->addWidget(p1Slider);
@@ -120,25 +120,25 @@ void MainWindow::initialize() {
     nearSlider->setTickInterval(1);
     nearSlider->setMinimum(1);
     nearSlider->setMaximum(1000);
-    nearSlider->setValue(10);
+    nearSlider->setValue(settings.nearPlane * 100);
 
     nearBox = new QDoubleSpinBox();
     nearBox->setMinimum(0.01f);
     nearBox->setMaximum(10.f);
     nearBox->setSingleStep(0.1f);
-    nearBox->setValue(0.1f);
+    nearBox->setValue(settings.nearPlane);
 
     farSlider = new QSlider(Qt::Orientation::Horizontal); // Far plane slider
     farSlider->setTickInterval(1);
     farSlider->setMinimum(1000);
     farSlider->setMaximum(10000);
-    farSlider->setValue(10000);
+    farSlider->setValue(settings.farPlane * 100);
 
     farBox = new QDoubleSpinBox();
     farBox->setMinimum(10.f);
     farBox->setMaximum(100.f);
     farBox->setSingleStep(0.1f);
-    farBox->setValue(100.f);
+    farBox->setValue(settings.farPlane);
 
     // Adds the slider and number box to the parameter layouts
     lnear->addWidget(nearSlider);
@@ -198,15 +198,15 @@ void MainWindow::initialize() {
 
     pixelSlider = new QSlider(Qt::Orientation::Horizontal);
     pixelSlider->setTickInterval(1);
-    pixelSlider->setMinimum(2);
+    pixelSlider->setMinimum(64);
     pixelSlider->setMaximum(256);
-    pixelSlider->setValue(64);
+    pixelSlider->setValue(settings.pixelCount);
 
     pixelBox = new QSpinBox();
-    pixelBox->setMinimum(2);
+    pixelBox->setMinimum(64);
     pixelBox->setMaximum(256);
     pixelBox->setSingleStep(1);
-    pixelBox->setValue(64);
+    pixelBox->setValue(settings.pixelCount);
 
     pixelate = new QCheckBox();
     pixelate->setChecked(settings.pixelate);
@@ -235,13 +235,13 @@ void MainWindow::initialize() {
     volumeSlider->setTickInterval(1);
     volumeSlider->setMinimum(0);
     volumeSlider->setMaximum(100);
-    volumeSlider->setValue(50);
+    volumeSlider->setValue(settings.songVolume);
 
     volumeBox = new QSpinBox();
     volumeBox->setMinimum(0);
     volumeBox->setMaximum(100);
     volumeBox->setSingleStep(1);
-    volumeBox->setValue(50);
+    volumeBox->setValue(settings.songVolume);
 
     // Adds the slider and number box to the parameter layouts
     lvol->addWidget(volumeSlider);
@@ -256,14 +256,6 @@ void MainWindow::initialize() {
     mediaControls->addWidget(volumeLayout);
 
     connectUIElements();
-
-    // Set default values of 5 for tesselation parameters
-    onValChangeP1(5);
-    onValChangeP2(5);
-
-    // Set default values for near and far planes
-    onValChangeNearBox(0.1f);
-    onValChangeFarBox(10.f);
 }
 
 void MainWindow::finish() {
