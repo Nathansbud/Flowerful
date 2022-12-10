@@ -152,6 +152,10 @@ void SceneMaker::rotateMushroom(MushroomData* shroom, glm::vec4 look, float angl
 void SceneMaker::translateMushroom(MushroomData* shroom, float y) {
     glm::mat4 translate = glm::mat4({1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, y, 0, 1});
     for (int i = 0; i < (shroom->pieces).size(); i++) {
+        // if cap
+        // sctm * translate down by 1 * rotate * translate up by 1 * sctm-1 * ctm
+        // if stem
+        // sctm * translate up by 0.5 * rotate
         glm::mat4 oldctm = shroom->pieces[i].ctm;
         glm::mat4 newctm = translate * oldctm;
         shroom->pieces[i].ctm = newctm;

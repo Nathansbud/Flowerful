@@ -577,6 +577,7 @@ void Realtime::timerEvent(QTimerEvent *event) {
 
     rotate_angle = 90 * bps * deltaTime;
 
+    // make it a sin wave
     if(translate_increase) {
         translate = fmin(bps * deltaTime * maxhop, maxhop-translate_total);
         translate_total += translate;
