@@ -116,7 +116,7 @@ void Realtime::initializeGL() {
         ":/resources/shaders/texture.frag"
     );
 
-    bpm = 144;
+    bpm = 144 * 2;
 
     pp_fbo_default = 2;
     pp_fbo_width = size().width() * m_devicePixelRatio;

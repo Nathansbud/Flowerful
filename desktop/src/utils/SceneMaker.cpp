@@ -7,7 +7,11 @@ const std::vector<glm::vec4> props = {
     glm::vec4(0, 0, 1, 1),
     glm::vec4(0.5, 0.5, 0.5, 1),
     glm::vec4(0.5, 0.5, 0, 1),
-    //glm::vec4(0.1, 0, 0, 1)
+
+    glm::vec4(0.302, 0.933, 0.918, 1),
+    glm::vec4(0.455, 0.933, 0.083, 1),
+    glm::vec4(1, 0.906, 0, 1),
+    glm::vec4(0.941, 0, 1, 1)
 };
 
 std::random_device rd;
