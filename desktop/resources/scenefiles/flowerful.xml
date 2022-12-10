@@ -22,7 +22,7 @@
         <object type="tree" name="root">
             <transblock>
                 <translate x="0" y="-0.1" z="0"/>
-                <scale x="32" y="0.1" z="32"/>
+                <scale x="12" y="0.1" z="100"/>
                 <object type="primitive" object="cube">
                     <texture file="textures/disco.jpg"/>
                     <ambient r="1" g="1" b="1"/>

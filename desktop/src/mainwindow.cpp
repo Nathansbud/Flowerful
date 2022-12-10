@@ -33,37 +33,19 @@ void MainWindow::initialize() {
     QLabel *tesselation_label = new QLabel(); // Parameters label
     tesselation_label->setText("Tesselation");
     tesselation_label->setFont(font);
+
     QLabel *camera_label = new QLabel(); // Camera label
     camera_label->setText("Camera");
     camera_label->setFont(font);
-    QLabel *filters_label = new QLabel(); // Filters label
-    filters_label->setText("Filters");
-    filters_label->setFont(font);
-    QLabel *ec_label = new QLabel(); // Extra Credit label
-    ec_label->setText("Extra Credit");
-    ec_label->setFont(font);
+
     QLabel *param1_label = new QLabel(); // Parameter 1 label
     param1_label->setText("Parameter 1:");
     QLabel *param2_label = new QLabel(); // Parameter 2 label
     param2_label->setText("Parameter 2:");
-    QLabel *near_label = new QLabel(); // Near plane label
-    near_label->setText("Near Plane:");
+
     QLabel *far_label = new QLabel(); // Far plane label
-    far_label->setText("Far Plane:");
+    far_label->setText("Fog Maximum:");
 
-    // Create checkbox for per-pixel filter
-    filter1 = new QCheckBox();
-    filter1->setText(QStringLiteral("Per-Pixel Filter"));
-    filter1->setChecked(false);
-
-    // Create checkbox for kernel-based filter
-    filter2 = new QCheckBox();
-    filter2->setText(QStringLiteral("Kernel-Based Filter"));
-    filter2->setChecked(false);
-
-    // Create file uploader for scene file
-    uploadFile = new QPushButton();
-    uploadFile->setText(QStringLiteral("Upload Scene File"));
 
     // Creates the boxes containing the parameter sliders and number boxes
     QGroupBox *p1Layout = new QGroupBox(); // horizonal slider 1 alignment
@@ -105,88 +87,33 @@ void MainWindow::initialize() {
     l2->addWidget(p2Box);
     p2Layout->setLayout(l2);
 
-    // Create file uploader for scene file
-    raytrace = new QPushButton();
-    raytrace->setText(QStringLiteral("Raytrace Current View"));
-
-    // Creates the boxes containing the camera sliders and number boxes
-    QGroupBox *nearLayout = new QGroupBox(); // horizonal near slider alignment
-    QHBoxLayout *lnear = new QHBoxLayout();
     QGroupBox *farLayout = new QGroupBox(); // horizonal far slider alignment
     QHBoxLayout *lfar = new QHBoxLayout();
 
-    // Create slider controls to control near/far planes
-    nearSlider = new QSlider(Qt::Orientation::Horizontal); // Near plane slider
-    nearSlider->setTickInterval(1);
-    nearSlider->setMinimum(1);
-    nearSlider->setMaximum(1000);
-    nearSlider->setValue(settings.nearPlane * 100);
-
-    nearBox = new QDoubleSpinBox();
-    nearBox->setMinimum(0.01f);
-    nearBox->setMaximum(10.f);
-    nearBox->setSingleStep(0.1f);
-    nearBox->setValue(settings.nearPlane);
-
     farSlider = new QSlider(Qt::Orientation::Horizontal); // Far plane slider
     farSlider->setTickInterval(1);
-    farSlider->setMinimum(1000);
+    farSlider->setMinimum(100);
     farSlider->setMaximum(10000);
     farSlider->setValue(settings.farPlane * 100);
 
     farBox = new QDoubleSpinBox();
-    farBox->setMinimum(10.f);
+    farBox->setMinimum(1.f);
     farBox->setMaximum(100.f);
     farBox->setSingleStep(0.1f);
     farBox->setValue(settings.farPlane);
-
-    // Adds the slider and number box to the parameter layouts
-    lnear->addWidget(nearSlider);
-    lnear->addWidget(nearBox);
-    nearLayout->setLayout(lnear);
 
     lfar->addWidget(farSlider);
     lfar->addWidget(farBox);
     farLayout->setLayout(lfar);
 
-    // Extra Credit:
-    ec1 = new QCheckBox();
-    ec1->setText(QStringLiteral("Invert"));
-    ec1->setChecked(false);
-
-    ec2 = new QCheckBox();
-    ec2->setText(QStringLiteral("Sharpen"));
-    ec2->setChecked(false);
-
-    ec3 = new QCheckBox();
-    ec3->setText(QStringLiteral("Extra Credit 3"));
-    ec3->setChecked(false);
-
-    ec4 = new QCheckBox();
-    ec4->setText(QStringLiteral("Extra Credit 4"));
-    ec4->setChecked(false);
-
-    vLayout->addWidget(uploadFile);
     vLayout->addWidget(tesselation_label);
     vLayout->addWidget(param1_label);
     vLayout->addWidget(p1Layout);
     vLayout->addWidget(param2_label);
     vLayout->addWidget(p2Layout);
     vLayout->addWidget(camera_label);
-    vLayout->addWidget(near_label);
-    vLayout->addWidget(nearLayout);
     vLayout->addWidget(far_label);
     vLayout->addWidget(farLayout);
-    vLayout->addWidget(filters_label);
-    vLayout->addWidget(filter1);
-    vLayout->addWidget(filter2);
-    // Extra Credit:
-    vLayout->addWidget(ec_label);
-    vLayout->addWidget(ec1);
-    vLayout->addWidget(ec2);
-    vLayout->addWidget(ec3);
-    vLayout->addWidget(ec4);
-    vLayout->addWidget(raytrace);
 
     cinematic = new QCheckBox();
     cinematic->setText(QStringLiteral("Cinematic Camera"));
@@ -269,15 +196,9 @@ void MainWindow::finish() {
 
 void MainWindow::connectUIElements() {
     // Realtime UI
-    connectPerPixelFilter();
-    connectKernelBasedFilter();
-    connectUploadFile();
     connectParam1();
     connectParam2();
-    connectNear();
     connectFar();
-    connectExtraCredit();
-    connectRaytrace();
 
     // Flowerful UI
     connectPixel();
@@ -359,18 +280,6 @@ void MainWindow::onValChangeVolumeBox(int newValue) {
     realtime->settingsChanged();
 }
 
-void MainWindow::connectPerPixelFilter() {
-    connect(filter1, &QCheckBox::clicked, this, &MainWindow::onPerPixelFilter);
-}
-
-void MainWindow::connectKernelBasedFilter() {
-    connect(filter2, &QCheckBox::clicked, this, &MainWindow::onKernelBasedFilter);
-}
-
-void MainWindow::connectUploadFile() {
-    connect(uploadFile, &QPushButton::clicked, this, &MainWindow::onUploadFile);
-}
-
 void MainWindow::connectParam1() {
     connect(p1Slider, &QSlider::valueChanged, this, &MainWindow::onValChangeP1);
     connect(p1Box, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
@@ -383,57 +292,11 @@ void MainWindow::connectParam2() {
             this, &MainWindow::onValChangeP2);
 }
 
-void MainWindow::connectNear() {
-    connect(nearSlider, &QSlider::valueChanged, this, &MainWindow::onValChangeNearSlider);
-    connect(nearBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
-            this, &MainWindow::onValChangeNearBox);
-}
-
 void MainWindow::connectFar() {
     connect(farSlider, &QSlider::valueChanged, this, &MainWindow::onValChangeFarSlider);
     connect(farBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
             this, &MainWindow::onValChangeFarBox);
 }
-
-void MainWindow::connectExtraCredit() {
-    connect(ec1, &QCheckBox::clicked, this, &MainWindow::onExtraCredit1);
-    connect(ec2, &QCheckBox::clicked, this, &MainWindow::onExtraCredit2);
-    connect(ec3, &QCheckBox::clicked, this, &MainWindow::onExtraCredit3);
-    connect(ec4, &QCheckBox::clicked, this, &MainWindow::onExtraCredit4);
-}
-
-void MainWindow::connectRaytrace() {
-    connect(raytrace, &QPushButton::clicked, this, &MainWindow::onRaytrace);
-}
-
-void MainWindow::onPerPixelFilter() {
-    settings.perPixelFilter = !settings.perPixelFilter;
-    realtime->settingsChanged();
-}
-
-void MainWindow::onKernelBasedFilter() {
-    settings.kernelBasedFilter = !settings.kernelBasedFilter;
-    if(settings.kernelBasedFilter) {
-        settings.extraCredit2 = false;
-        ec2->setChecked(false);
-    }
-
-    realtime->settingsChanged();
-}
-
-void MainWindow::onUploadFile() {
-    // Get abs path of scene file
-    QString configFilePath = QFileDialog::getOpenFileName(this, tr("Upload File"), QDir::homePath(), tr("Scene Files (*.xml)"));
-    if (configFilePath.isNull()) {
-        std::cout << "Failed to load null scenefile." << std::endl;
-        return;
-    }
-
-    settings.sceneFilepath = configFilePath.toStdString();
-    std::cout << "Loaded scenefile: \"" << configFilePath.toStdString() << "\"." << std::endl;
-    realtime->sceneChanged();
-}
-
 
 void MainWindow::onValChangeP1(int newValue) {
     p1Slider->setValue(newValue);
@@ -449,23 +312,9 @@ void MainWindow::onValChangeP2(int newValue) {
     realtime->settingsChanged();
 }
 
-void MainWindow::onValChangeNearSlider(int newValue) {
-//    nearSlider->setValue(newValue);
-    nearBox->setValue(newValue/100.f);
-    settings.nearPlane = nearBox->value();
-    realtime->settingsChanged();
-}
-
 void MainWindow::onValChangeFarSlider(int newValue) {
-//    farSlider->setValue(newValue);
     farBox->setValue(newValue/100.f);
     settings.farPlane = farBox->value();
-    realtime->settingsChanged();
-}
-
-void MainWindow::onValChangeNearBox(double newValue) {
-    nearSlider->setValue(int(newValue*100.f));
-    settings.nearPlane = nearBox->value();
     realtime->settingsChanged();
 }
 
@@ -473,35 +322,4 @@ void MainWindow::onValChangeFarBox(double newValue) {
     farSlider->setValue(int(newValue*100.f));
     settings.farPlane = farBox->value();
     realtime->settingsChanged();
-}
-
-// Extra Credit:
-
-void MainWindow::onExtraCredit1() {
-    settings.extraCredit1 = !settings.extraCredit1;
-    realtime->settingsChanged();
-}
-
-void MainWindow::onExtraCredit2() {
-    settings.extraCredit2 = !settings.extraCredit2;
-    if(settings.extraCredit2) {
-        settings.kernelBasedFilter = false;
-        filter2->setChecked(false);
-    }
-
-    realtime->settingsChanged();
-}
-
-void MainWindow::onExtraCredit3() {
-    settings.extraCredit3 = !settings.extraCredit3;
-    realtime->settingsChanged();
-}
-
-void MainWindow::onExtraCredit4() {
-    settings.extraCredit4 = !settings.extraCredit4;
-    realtime->settingsChanged();
-}
-
-void MainWindow::onRaytrace() {
-    realtime->raytrace();
 }

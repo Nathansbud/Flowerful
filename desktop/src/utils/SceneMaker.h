@@ -23,7 +23,7 @@ class SceneMaker {
 
 public:
    static MushroomData* generateMushroom(int variant, float xOffset, float zOffset);
-   static std::vector<MushroomData*> generateScene(int gridLength, int gridDistance);
+   static std::vector<MushroomData*> generateScene(int gridLength, int gridHeight, int gridDistance);
    static void rotateMushroom(MushroomData* shroom, glm::vec4 look, float angle);
    static void translateMushroom(MushroomData* shroom, float y);
 };

@@ -47,9 +47,11 @@ void main() {
     if(channel == 4) {
         if(swapFloor) {
             // might also be nice to just swap?
-            fragColor = texture(sceneTextures[channel], uvPos + 0.1);
+            vec2 uvUsed = uvPos + 0.1;
+            fragColor = texture(sceneTextures[channel], uvUsed);
         } else {
-            fragColor = texture(sceneTextures[channel], uvPos + 0.05);
+            vec2 uvUsed = uvPos + 0.05;
+            fragColor = texture(sceneTextures[channel], uvUsed);
         }
     } else {
         fragColor = ka * cAmbient;

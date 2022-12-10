@@ -109,16 +109,19 @@ MushroomData* SceneMaker::generateMushroom(int variant, float xOffset, float zOf
     return mushroom;
 }
 
-std::vector<MushroomData*> SceneMaker::generateScene(int gridLength, int gridDistance) {
-    std::vector<MushroomData*> mushGrid(gridLength * gridLength);
+std::vector<MushroomData*> SceneMaker::generateScene(int gridWidth, int gridHeight, int gridDistance) {
+    std::vector<MushroomData*> mushGrid(gridWidth * gridHeight);
     std::uniform_real_distribution<> gridOffset(-gridDistance / 2.f, gridDistance / 2.f);
-    int hgl = gridLength / 2;
-    for(int i = -hgl; i < hgl; i++) {
-        for(int j = -hgl; j < hgl; j++) {
-            mushGrid[(i + hgl) * gridLength + (j + hgl)] = SceneMaker::generateMushroom(
+
+    int hgw = gridWidth / 2;
+    int hgh = gridHeight / 2;
+
+    for(int row = -hgh; row < hgh; row++) {
+        for(int col = -hgw; col < hgw; col++) {
+            mushGrid[(row + hgh) * gridWidth + (col + hgh)] = SceneMaker::generateMushroom(
                 mushIdx(gen),
-                gridDistance * i + gridOffset(gen),
-                gridDistance * j + gridOffset(gen)
+                gridDistance * col + gridOffset(gen),
+                gridDistance * row + gridOffset(gen)
             );
         }
     }

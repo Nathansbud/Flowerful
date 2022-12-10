@@ -165,7 +165,7 @@ void Realtime::initializeGL() {
     sceneChanged();
 
     // populates mushrooms, loads additional textures
-    mushGrid = SceneMaker::generateScene(20, 4);
+    mushGrid = SceneMaker::generateScene(10, 100, 3);
     std::vector<std::string> mushPaths = {
         "../desktop/resources/textures/mushroom0.jpg",
         "../desktop/resources/textures/mushroom1.jpg",
