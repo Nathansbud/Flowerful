@@ -1,36 +1,38 @@
 #include "Mushtop.h"
 
 void Mush::makeTile(glm::vec3 topLeft,
-                      glm::vec3 topRight,
-                      glm::vec3 bottomLeft,
-                      glm::vec3 bottomRight, bool under) {
+                    glm::vec3 topRight,
+                    glm::vec3 bottomLeft,
+                    glm::vec3 bottomRight,
+                    float height,
+                    bool under) {
     // Task 5: Implement the makeTile() function for a Sphere
     // Note: this function is very similar to the makeTile() function for Cube,
     //       but the normals are calculated in a different way!
     float sign = under ? -1 : 1;
     insertVec3(m_vertexData, topLeft);
     insertVec3(m_vertexData, sign * glm::normalize(topLeft));
-    insertVec2(m_vertexData, glm::vec2(0, 0));
+    insertVec2(m_vertexData, glm::vec2(1 - getU(topLeft), topLeft.y / height));
 
     insertVec3(m_vertexData, bottomLeft);
     insertVec3(m_vertexData, sign * glm::normalize(bottomLeft));
-    insertVec2(m_vertexData, glm::vec2(0, 0));
+    insertVec2(m_vertexData, glm::vec2(1 - getU(bottomLeft), bottomLeft.y / height));
 
     insertVec3(m_vertexData, bottomRight);
     insertVec3(m_vertexData, sign * glm::normalize(bottomRight));
-    insertVec2(m_vertexData, glm::vec2(0, 0));
+    insertVec2(m_vertexData, glm::vec2(1 - getU(bottomRight), bottomRight.y / height));
 
     insertVec3(m_vertexData, topLeft);
     insertVec3(m_vertexData, sign * glm::normalize(topLeft));
-    insertVec2(m_vertexData, glm::vec2(0, 0));
+    insertVec2(m_vertexData, glm::vec2(1 - getU(topLeft), topLeft.y / height));
 
     insertVec3(m_vertexData, bottomRight);
     insertVec3(m_vertexData, sign * glm::normalize(bottomRight));
-    insertVec2(m_vertexData, glm::vec2(0, 0));
+    insertVec2(m_vertexData, glm::vec2(1 - getU(bottomRight), bottomRight.y / height));
 
     insertVec3(m_vertexData, topRight);
     insertVec3(m_vertexData, sign * glm::normalize(topRight));
-    insertVec2(m_vertexData, glm::vec2(0, 0));
+    insertVec2(m_vertexData, glm::vec2(1 - getU(topRight), topRight.y / height));
 }
 
 void Mush::makeWedge(float currentTheta, float nextTheta, float height) {
@@ -67,8 +69,8 @@ void Mush::makeWedge(float currentTheta, float nextTheta, float height) {
         };
 
         bool under = height == 0.5 ? 0 : 1;
-        if(!under) makeTile(topLeft, topRight, bottomLeft, bottomRight, under);
-        else makeTile(topRight, topLeft, bottomRight, bottomLeft, under);
+        if(!under) makeTile(topLeft, topRight, bottomLeft, bottomRight, height, under);
+        else makeTile(topRight, topLeft, bottomRight, bottomLeft, height, under);
     }
 }
 

@@ -356,6 +356,7 @@ void Realtime::paintGL() {
     glUniform1f(glGetUniformLocation(m_shader, "fogMax"), 0.8 * settings.farPlane);
     glUniform1f(glGetUniformLocation(m_shader, "fogMin"), settings.nearPlane);
 
+    glUniform1i(glGetUniformLocation(m_shader, "channel"), 4);
     glActiveTexture(GL_TEXTURE4);
     glBindTexture(GL_TEXTURE_2D, ground_texture);
     drawShapes(renderData.shapes);
@@ -364,7 +365,7 @@ void Realtime::paintGL() {
         if(mush != nullptr) {
             if(mush->variant == 3) SceneMaker::rotateMushroom(mush, camera.getLook(), rotate_angle);
             if(mush->variant == 2) SceneMaker::translateMushroom(mush, translate);
-
+            glUniform1i(glGetUniformLocation(m_shader, "channel"), mush->variant);
             glActiveTexture(GL_TEXTURE0 + mush->variant);
             glBindTexture(GL_TEXTURE_2D, mushroom_textures[mush->variant]);
             drawShapes(mush->pieces);
@@ -536,9 +537,10 @@ void Realtime::mouseMoveEvent(QMouseEvent *event) {
         if(m_mouseDown) {
             pendingRotX = deltaX / 100.f;
             pendingRotY = deltaY / 100.f;
+            if(!settings.cinematic) {
+                update(); // asks for a PaintGL() call to occur
+            }
         }
-
-        update(); // asks for a PaintGL() call to occur
     }
 }
 
