@@ -37,6 +37,9 @@ uniform float fogMin;
 
 uniform bool textured;
 
+// 0, 1, 2, 3 = Mushroom Variant, 4 = Ground Texture
+uniform sampler2D[5] sceneTextures;
+
 void main() {
     fragColor = ka * cAmbient;
     vec3 normal = normalize(worldNormal);
@@ -139,6 +142,6 @@ void main() {
     fragColor = mix(fogColor, fragColor, fogFactor);
 
     if(textured) {
-        fragColor = vec4(uvPos.x, uvPos.y, 0, 1);
+        fragColor = texture(sceneTextures[4], uvPos);
     }
 }

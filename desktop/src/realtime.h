@@ -107,6 +107,10 @@ private:
     int ground_texture_width;
     int ground_texture_height;
 
+    GLuint mushroom_textures[4];
+    int mushroom_texture_width;
+    int mushroom_texture_height;
+
     // movement globals
     float bpm;
     float rotate_angle;

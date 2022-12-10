@@ -70,6 +70,7 @@ void Realtime::finish() {
     glDeleteBuffers(1, &screen_vbo);
 
     glDeleteTextures(1, &ground_texture);
+    glDeleteTextures(4, mushroom_textures);
 
     for(int i = 0; i < mushGrid.size(); i++) {
         if(mushGrid[i] != nullptr) delete mushGrid[i];
@@ -124,6 +125,14 @@ void Realtime::initializeGL() {
     glUniform1i(glGetUniformLocation(pp_shader, "bloom"), 1);
     glUseProgram(0);
 
+    glUseProgram(m_shader);
+    glUniform1i(glGetUniformLocation(m_shader, "sceneTextures[0]"), 0);
+    glUniform1i(glGetUniformLocation(m_shader, "sceneTextures[1]"), 1);
+    glUniform1i(glGetUniformLocation(m_shader, "sceneTextures[2]"), 2);
+    glUniform1i(glGetUniformLocation(m_shader, "sceneTextures[3]"), 3);
+    glUniform1i(glGetUniformLocation(m_shader, "sceneTextures[4]"), 4);
+    glUseProgram(0);
+
     // generate vbo buffers
     glGenBuffers(5, primitive_vbos);
     glGenVertexArrays(5, primitive_vaos);
@@ -155,19 +164,42 @@ void Realtime::initializeGL() {
 
     // populates mushrooms, loads additional textures
     mushGrid = SceneMaker::generateScene(20, 4);
+    std::vector<std::string> mushPaths = {
+        "../desktop/resources/textures/mushrooms/mushroom0.jpg",
+        "../desktop/resources/textures/mushrooms/mushroom1.jpg",
+        "../desktop/resources/textures/mushrooms/mushroom2.jpg",
+        "../desktop/resources/textures/mushrooms/mushroom3.jpg"
+    };
+
+    SceneParser::loadTexturesFromPaths(renderData.textures, mushPaths);
 
     std::string path = "../desktop/resources/textures/forest/GroundForest003_COL_VAR1_1k.jpg";
     TextureData& gt = renderData.textures.at(path);
-    // TODO: Parse additional textures from mushroom caps!
 
     glGenTextures(1, &ground_texture);
-    glActiveTexture(GL_TEXTURE0);
+    glActiveTexture(GL_TEXTURE4);
     glBindTexture(GL_TEXTURE_2D, ground_texture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, gt.width, gt.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, gt.textureMap.data());
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glBindTexture(GL_TEXTURE_2D, 0);
 
+    glGenTextures(4, mushroom_textures);
+    for(int i = 0; i < 4; i++) {
+        std::string shroomPath = "../desktop/resources/textures/mushrooms/mushroom" + std::to_string(i) + ".jpg";
+        TextureData& tex = renderData.textures.at(shroomPath);
+
+        glActiveTexture(GL_TEXTURE0 + i);
+        glBindTexture(GL_TEXTURE_2D, mushroom_textures[i]);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex.width, tex.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex.textureMap.data());
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
 }
 
 void Realtime::refreshCamera() {
@@ -324,17 +356,23 @@ void Realtime::paintGL() {
     glUniform1f(glGetUniformLocation(m_shader, "fogMax"), 0.8 * settings.farPlane);
     glUniform1f(glGetUniformLocation(m_shader, "fogMin"), settings.nearPlane);
 
+    glActiveTexture(GL_TEXTURE4);
+    glBindTexture(GL_TEXTURE_2D, ground_texture);
     drawShapes(renderData.shapes);
+
     for(MushroomData *mush : mushGrid) {
         if(mush != nullptr) {
             if(mush->variant == 3) SceneMaker::rotateMushroom(mush, camera.getLook(), rotate_angle);
             if(mush->variant == 2) SceneMaker::translateMushroom(mush, translate);
+
+            glActiveTexture(GL_TEXTURE0 + mush->variant);
+            glBindTexture(GL_TEXTURE_2D, mushroom_textures[mush->variant]);
             drawShapes(mush->pieces);
         }
     }
 
     glUseProgram(0);
-
+    glBindTexture(GL_TEXTURE_2D, 0);
 
     // bind default FBO after rendering shapes
     glBindFramebuffer(GL_FRAMEBUFFER, pp_fbo_default);
