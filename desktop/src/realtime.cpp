@@ -80,6 +80,8 @@ void Realtime::finish() {
 }
 
 void Realtime::initializeGL() {
+    getSongMetadata();
+
     m_devicePixelRatio = this->devicePixelRatio();
 
     m_timer = startTimer(1000/60);
@@ -165,15 +167,15 @@ void Realtime::initializeGL() {
     // populates mushrooms, loads additional textures
     mushGrid = SceneMaker::generateScene(20, 4);
     std::vector<std::string> mushPaths = {
-        "../desktop/resources/textures/mushrooms/mushroom0.jpg",
-        "../desktop/resources/textures/mushrooms/mushroom1.jpg",
-        "../desktop/resources/textures/mushrooms/mushroom2.jpg",
-        "../desktop/resources/textures/mushrooms/mushroom3.jpg"
+        "../desktop/resources/textures/mushroom0.jpg",
+        "../desktop/resources/textures/mushroom1.jpg",
+        "../desktop/resources/textures/mushroom2.jpg",
+        "../desktop/resources/textures/mushroom3.jpg"
     };
 
     SceneParser::loadTexturesFromPaths(renderData.textures, mushPaths);
 
-    std::string path = "../desktop/resources/textures/forest/GroundForest003_COL_VAR1_1k.jpg";
+    std::string path = "../desktop/resources/textures/disco.jpg";
     TextureData& gt = renderData.textures.at(path);
 
     glGenTextures(1, &ground_texture);
@@ -188,7 +190,7 @@ void Realtime::initializeGL() {
 
     glGenTextures(4, mushroom_textures);
     for(int i = 0; i < 4; i++) {
-        std::string shroomPath = "../desktop/resources/textures/mushrooms/mushroom" + std::to_string(i) + ".jpg";
+        std::string shroomPath = "../desktop/resources/textures/mushroom" + std::to_string(i) + ".jpg";
         TextureData& tex = renderData.textures.at(shroomPath);
 
         glActiveTexture(GL_TEXTURE0 + i);
@@ -330,6 +332,7 @@ void Realtime::drawShapes(std::vector<RenderShapeData>& shapes) {
         glUniform4f(glGetUniformLocation(m_shader, "cDiffuse"), mat.cDiffuse.r, mat.cDiffuse.g, mat.cDiffuse.b, mat.cDiffuse.a);
         glUniform4f(glGetUniformLocation(m_shader, "cSpecular"), mat.cSpecular.r, mat.cSpecular.g, mat.cSpecular.b, mat.cSpecular.a);
         glUniform1f(glGetUniformLocation(m_shader, "cShininess"), mat.shininess);
+        glUniform1f(glGetUniformLocation(m_shader, "cBlend"), mat.blend);
         glUniform4f(glGetUniformLocation(m_shader, "cameraPos"), camPos.x, camPos.y, camPos.z, 1);
         glUniform1i(glGetUniformLocation(m_shader, "textured"), mat.textureMap.isUsed);
 
@@ -357,8 +360,11 @@ void Realtime::paintGL() {
     glUniform1f(glGetUniformLocation(m_shader, "fogMin"), settings.nearPlane);
 
     glUniform1i(glGetUniformLocation(m_shader, "channel"), 4);
+    glUniform1i(glGetUniformLocation(m_shader, "swapFloor"), translate_increase);
+
     glActiveTexture(GL_TEXTURE4);
     glBindTexture(GL_TEXTURE_2D, ground_texture);
+
     drawShapes(renderData.shapes);
 
     for(MushroomData *mush : mushGrid) {
@@ -590,6 +596,14 @@ void Realtime::timerEvent(QTimerEvent *event) {
 
     update(); // asks for a PaintGL() call to occur
 }
+
+void Realtime::getSongMetadata() {
+    // yes I know this is the devil,
+//    system("../desktop/src/audio/venv/bin/python3 ../desktop/src/audio/fft.py");
+}
+
+
+
 
 void Realtime::raytrace() {
     if(!initialized) return;

@@ -145,6 +145,7 @@ private:
     // Audio
     QMediaPlayer* player = nullptr;
     QAudioOutput* audioOutput = nullptr;
+    void getSongMetadata();
 
     // Device Correction Variables
     int m_devicePixelRatio;

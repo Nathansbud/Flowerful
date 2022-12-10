@@ -14,6 +14,7 @@ uniform vec4 cAmbient;
 uniform vec4 cDiffuse;
 uniform vec4 cSpecular;
 uniform float cShininess;
+uniform float cBlend;
 
 uniform bool bloomable;
 uniform vec4 cameraPos;
@@ -40,109 +41,56 @@ uniform bool textured;
 // 0, 1, 2, 3 = Mushroom Variant, 4 = Ground Texture
 uniform sampler2D[5] sceneTextures;
 uniform int channel;
+uniform bool swapFloor;
 
 void main() {
-    fragColor = ka * cAmbient;
-    vec3 normal = normalize(worldNormal);
+    if(channel == 4) {
+        if(swapFloor) {
+            // might also be nice to just swap?
+            fragColor = texture(sceneTextures[channel], uvPos + 0.3);
+        } else {
+            fragColor = texture(sceneTextures[channel], uvPos);
+        }
+    } else {
+        fragColor = ka * cAmbient;
+        vec3 normal = normalize(worldNormal);
 
-    vec3 dtc = vec3(cameraPos) - worldPosition;
-    float lc = length(dtc);
-    vec3 directionToCamera = normalize(dtc);
+        vec3 dtc = vec3(cameraPos) - worldPosition;
+        float lc = length(dtc);
+        vec3 directionToCamera = normalize(dtc);
 
-    for(int i = 0; i < numLights; i++) {
-        Light l = lights[i];
-        // POINT (it fucked)
-        if(l.type == 0) {
-            vec3 dtl = l.position - worldPosition;
-            float ld = length(dtl);
-            vec3 directionToLight = normalize(dtl);
+        for(int i = 0; i < numLights; i++) {
+            Light l = lights[i];
+            if(l.type == 1) {
+                vec3 lightDir = normalize(-l.direction);
+                float lightFactor = dot(normal, lightDir);
+                if(lightFactor < 0) {
+                    lightFactor = 0;
+                }
 
-            float fatt = min(1, 1.0/dot(l.function, vec3(1, ld, ld * ld)));
-            float lightFactor = dot(normal, directionToLight);
-            if(lightFactor < 0) {
-                lightFactor = 0;
-            }
+                if(textured) {
+                    vec4 texColor = texture(sceneTextures[channel], uvPos);
+                    fragColor += l.color * mix(texColor, kd * cDiffuse, cBlend) * clamp(lightFactor, 0, 1);
+                } else {
+                    fragColor += l.color * kd * cDiffuse * clamp(lightFactor, 0, 1);
+                }
 
-            fragColor += fatt * l.color * kd * cDiffuse * clamp(lightFactor, 0, 1);
-            float cameraFactor = dot(directionToCamera, reflect(directionToLight, normal));
-            if(cameraFactor < 0) {
-                cameraFactor = -cameraFactor;
-            } else {
-                cameraFactor = 0;
-            }
-            cameraFactor = clamp(cameraFactor, 0, 1);
+                float cameraFactor = dot(directionToCamera, reflect(lightDir, normal));
+                if(cameraFactor < 0) {
+                    cameraFactor = -cameraFactor;
+                } else {
+                    cameraFactor = 0;
+                }
+                cameraFactor = clamp(cameraFactor, 0, 1);
 
-            if(cameraFactor > 0 || (cameraFactor == 0 && cShininess > 0)) {
-                fragColor += fatt * l.color * ks * cSpecular * pow(cameraFactor, cShininess);
+                if(cameraFactor > 0 || (cameraFactor == 0 && cShininess > 0)) {
+                    fragColor += l.color * ks * cSpecular * pow(cameraFactor, cShininess);
+                }
             }
         }
-        // DIRECTIONAL
-        else if(l.type == 1) {
-            vec3 lightDir = normalize(-l.direction);
-            float lightFactor = dot(normal, lightDir);
-            if(lightFactor < 0) {
-                lightFactor = 0;
-            }
 
-            fragColor += l.color * kd * cDiffuse * clamp(lightFactor, 0, 1);
-
-            float cameraFactor = dot(directionToCamera, reflect(lightDir, normal));
-            if(cameraFactor < 0) {
-                cameraFactor = -cameraFactor;
-            } else {
-                cameraFactor = 0;
-            }
-            cameraFactor = clamp(cameraFactor, 0, 1);
-
-            if(cameraFactor > 0 || (cameraFactor == 0 && cShininess > 0)) {
-                fragColor += l.color * ks * cSpecular * pow(cameraFactor, cShininess);
-            }
-        }
-        // SPOT
-        else {
-            vec3 dtl = l.position - worldPosition;
-            float ld = length(dtl);
-            vec3 directionToLight = normalize(dtl);
-            float angleOuter = l.angle;
-            float angleInner = l.angle - l.penumbra;
-
-            vec3 spotDir = normalize(vec3(l.direction));
-            float angleX = acos(dot(spotDir, -directionToLight));
-
-            vec4 intensity = l.color;
-            if(angleX <= angleOuter && angleX > angleInner) {
-                float ff = (angleX - angleInner) / (angleOuter - angleInner);
-                intensity *= 1 - (-2 * pow(ff, 3) + 3 * pow(ff, 2));
-            } else if(angleX > angleOuter) {
-                intensity *= 0;
-            }
-
-            float fatt = min(1, 1/dot(l.function, vec3(1, ld, ld * ld)));
-            float lightFactor = dot(normal, directionToLight);
-            if(lightFactor < 0) {
-                lightFactor = 0;
-            }
-
-            fragColor += fatt * intensity * kd * cDiffuse * clamp(lightFactor, 0, 1);
-
-            float cameraFactor = dot(directionToCamera, reflect(directionToLight, normal));
-            if(cameraFactor < 0) {
-                cameraFactor = -cameraFactor;
-            } else {
-                cameraFactor = 0;
-            }
-            cameraFactor = clamp(cameraFactor, 0, 1);
-            if(cameraFactor > 0 || (cameraFactor == 0 && cShininess > 0)) {
-                fragColor += fatt * intensity * ks * cSpecular * pow(cameraFactor, cShininess);
-            }
-        }
-    }
-
-    fragColor[3] = 1;
-    float fogFactor = clamp((fogMax - lc) / (fogMax - fogMin), 0, 1);
-    fragColor = mix(fogColor, fragColor, fogFactor);
-
-    if(textured) {
-        fragColor = texture(sceneTextures[channel], uvPos);
+        fragColor[3] = 1;
+        float fogFactor = clamp((fogMax - lc) / (fogMax - fogMin), 0, 1);
+        fragColor = mix(fogColor, fragColor, fogFactor);
     }
 }

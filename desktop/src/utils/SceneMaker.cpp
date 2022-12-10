@@ -18,7 +18,7 @@ std::uniform_int_distribution<> mushIdx(0, 3);
 
 MushroomData* SceneMaker::generateMushroom(int variant, float xOffset, float zOffset) {
     SceneFileMap mushroomTexture;
-    mushroomTexture.filename = "../desktop/resources/textures/mushrooms/mushroom" + std::to_string(variant) + ".jpg";
+    mushroomTexture.filename = "../desktop/resources/textures/mushroom" + std::to_string(variant) + ".jpg";
     mushroomTexture.repeatU = true;
     mushroomTexture.repeatV = true;
     mushroomTexture.isUsed = true;
