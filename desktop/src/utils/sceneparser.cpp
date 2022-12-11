@@ -27,10 +27,11 @@ void loadShapes(std::vector<RenderShapeData>& shapes, SceneNode* node, glm::mat4
 
     for(ScenePrimitive* p : node->primitives) {
         shapes.emplace_back((RenderShapeData){
-            .primitive = *p,
+            .primitive = *p,         
             .ctm = ctm,
             .ictm = glm::inverse(ctm),
-            .nictm = glm::transpose(glm::inverse(glm::mat3(ctm)))
+            .nictm = glm::transpose(glm::inverse(glm::mat3(ctm))),
+            .ctmInitial = ctm,
         });
     }
 

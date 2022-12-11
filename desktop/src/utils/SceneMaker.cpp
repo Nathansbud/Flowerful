@@ -54,13 +54,8 @@ MushroomData* SceneMaker::generateMushroom(int variant, float xOffset, float zOf
     float h = heights[variant];
     float cw = capwidths[variant];
     float ch = capheights[variant];
+
     // init cap ctms
-
-    glm::mat4 ctm_var4;
-    glm::mat4 ictm_var4;
-    glm::mat4 nictm_var4;
-    RenderShapeData mushtop_var4;
-
     glm::mat4 ctm = glm::mat4({cw, 0, 0, 0}, {0, ch, 0, 0}, {0, 0, cw, 0}, {xOffset, h, zOffset, 1});
     if(variant == 2) ctm = glm::mat4({cw, 0, 0, 0}, {0, ch, 0, 0}, {0, 0, cw, 0}, {xOffset, h - 2, zOffset, 1});
     glm::mat4 ictm = glm::inverse(ctm);
@@ -79,11 +74,13 @@ MushroomData* SceneMaker::generateMushroom(int variant, float xOffset, float zOf
     glm::mat4 sictm = glm::inverse(sctm);
     glm::mat4 snictm = glm::inverse(glm::transpose(glm::mat3(sctm)));
 
+    glm::mat4 ctmShape = scaleall * sctm;
     RenderShapeData mushstem = RenderShapeData{
         .primitive = mushstem_prim,
-        .ctm = scaleall * sctm,
+        .ctm = ctmShape,
         .ictm = sictm,
-        .nictm = snictm
+        .nictm = snictm,
+        .ctmInitial = ctmShape
     };
 
     // make the mushroom
@@ -91,16 +88,20 @@ MushroomData* SceneMaker::generateMushroom(int variant, float xOffset, float zOf
     mushroom->pieces = std::vector<RenderShapeData>{mushtop, mushstem};
 
     // extra hat!
-    if(variant == 3)  {
-        ctm_var4 = glm::mat4({cw/2, 0, 0, 0}, {0, ch, 0, 0}, {0, 0, cw/2, 0}, {xOffset, h + 0.8 * ch/2, zOffset, 1});
-        ictm_var4 = glm::inverse(ctm_var4);
-        nictm_var4 = glm::inverse(glm::transpose(glm::mat3(ctm_var4)));
+    if(variant == 3)  {        
+        glm::mat4 ctm_var4 = glm::mat4({cw/2, 0, 0, 0}, {0, ch, 0, 0}, {0, 0, cw/2, 0}, {xOffset, h + 0.8 * ch/2, zOffset, 1});
+        glm::mat4 ictm_var4 = glm::inverse(ctm_var4);
+        glm::mat4 nictm_var4 = glm::inverse(glm::transpose(glm::mat3(ctm_var4)));
+        glm::mat4 ctmVar4 = scaleall * ctm_var4;
+
         RenderShapeData mushtop_var4 = RenderShapeData{
             .primitive = mushtop_prim,
-            .ctm = scaleall * ctm_var4,
+            .ctm = ctmVar4,
             .ictm = ictm_var4,
-            .nictm = nictm_var4
+            .nictm = nictm_var4,
+            .ctmInitial = ctmVar4
         };
+
         mushroom->pieces.push_back(mushtop_var4);
     }
 
@@ -165,10 +166,9 @@ void SceneMaker::translateMushroom(MushroomData* shroom, float y) {
         // sctm * translate up by 0.5 * rotate
         glm::mat4 oldctm = shroom->pieces[i].ctm;
         glm::mat4 newctm = translate * oldctm;
+
         shroom->pieces[i].ctm = newctm;
         shroom->pieces[i].ictm = glm::inverse(newctm),
         shroom->pieces[i].nictm = glm::inverse(glm::transpose(newctm));
     }
 }
-
-

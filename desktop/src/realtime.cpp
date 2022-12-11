@@ -97,7 +97,7 @@ void Realtime::initializeGL() {
     std::cout << "Initialized GL: Version " << glewGetString(GLEW_VERSION) << std::endl;
 
     // Allows OpenGL to draw objects appropriately on top of one another
-    glClearColor(fogColor[0], fogColor[1], fogColor[2], fogColor[3]);
+    glClearColor(settings.fogColor.r, settings.fogColor.g, settings.fogColor.b, 1);
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
@@ -116,7 +116,7 @@ void Realtime::initializeGL() {
         ":/resources/shaders/texture.frag"
     );
 
-    bpm = 144 * 2;
+    bpm = 176 * 2;
 
     pp_fbo_default = 2;
     pp_fbo_width = size().width() * m_devicePixelRatio;
@@ -343,6 +343,7 @@ void Realtime::drawShapes(std::vector<RenderShapeData>& shapes) {
 }
 
 void Realtime::paintGL() {
+    glClearColor(settings.fogColor.r, settings.fogColor.g, settings.fogColor.b, 1);
     glBindFramebuffer(GL_FRAMEBUFFER, pp_fbo);
     glViewport(0, 0, pp_fbo_width, pp_fbo_height);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -355,7 +356,7 @@ void Realtime::paintGL() {
     glUniform1f(glGetUniformLocation(m_shader, "ka"), renderData.globalData.ka);
     glUniform1f(glGetUniformLocation(m_shader, "kd"), renderData.globalData.kd);
     glUniform1f(glGetUniformLocation(m_shader, "ks"), renderData.globalData.ks);
-    glUniform4f(glGetUniformLocation(m_shader, "fogColor"), fogColor.r, fogColor.g, fogColor.b, 1);
+    glUniform4f(glGetUniformLocation(m_shader, "fogColor"), settings.fogColor.r, settings.fogColor.g, settings.fogColor.b, 1);
     glUniform1f(glGetUniformLocation(m_shader, "fogMax"), 0.8 * settings.farPlane);
     glUniform1f(glGetUniformLocation(m_shader, "fogMin"), settings.nearPlane);
 
@@ -491,6 +492,7 @@ void Realtime::settingsChanged() {
             camera.updateFrustum(size().width(), size().height(), settings.nearPlane, settings.farPlane);
         }
     }
+
 
 
     update(); // asks for a PaintGL() call to occur

@@ -106,6 +106,65 @@ void MainWindow::initialize() {
     lfar->addWidget(farBox);
     farLayout->setLayout(lfar);
 
+
+    QLabel *fog_color_label = new QLabel(); // Far plane label
+    fog_color_label->setText("Fog Color (R, G, B):");
+
+    QVBoxLayout *fogColorLayout = new QVBoxLayout(); // horizonal far slider alignment
+
+    QHBoxLayout *lr = new QHBoxLayout();
+    QHBoxLayout *lg = new QHBoxLayout();
+    QHBoxLayout *lb = new QHBoxLayout();
+
+    redSlider = new QSlider(Qt::Orientation::Horizontal); // Far plane slider
+    redSlider->setTickInterval(1);
+    redSlider->setMinimum(0);
+    redSlider->setMaximum(255);
+    redSlider->setValue(settings.fogColor.r * 255);
+
+    redBox = new QDoubleSpinBox();
+    redBox->setMinimum(0);
+    redBox->setMaximum(255);
+    redBox->setSingleStep(1);
+    redBox->setValue(settings.fogColor.r * 255);
+
+    greenSlider = new QSlider(Qt::Orientation::Horizontal); // Far plane slider
+    greenSlider->setTickInterval(1);
+    greenSlider->setMinimum(0);
+    greenSlider->setMaximum(255);
+    greenSlider->setValue(settings.fogColor.g * 255);
+
+    greenBox = new QDoubleSpinBox();
+    greenBox->setMinimum(0);
+    greenBox->setMaximum(255);
+    greenBox->setSingleStep(1);
+    greenBox->setValue(settings.fogColor.g * 255);
+
+    blueSlider = new QSlider(Qt::Orientation::Horizontal); // Far plane slider
+    blueSlider->setTickInterval(1);
+    blueSlider->setMinimum(0);
+    blueSlider->setMaximum(255);
+    blueSlider->setValue(settings.fogColor.b * 255);
+
+    blueBox = new QDoubleSpinBox();
+    blueBox->setMinimum(0);
+    blueBox->setMaximum(255);
+    blueBox->setSingleStep(1);
+    blueBox->setValue(settings.fogColor.b * 255);
+
+    lr->addWidget(redSlider);
+    lr->addWidget(redBox);
+
+    lg->addWidget(greenSlider);
+    lg->addWidget(greenBox);
+
+    lb->addWidget(blueSlider);
+    lb->addWidget(blueBox);
+
+    fogColorLayout->addLayout(lr);
+    fogColorLayout->addLayout(lg);
+    fogColorLayout->addLayout(lb);
+
     vLayout->addWidget(tesselation_label);
     vLayout->addWidget(param1_label);
     vLayout->addWidget(p1Layout);
@@ -114,6 +173,8 @@ void MainWindow::initialize() {
     vLayout->addWidget(camera_label);
     vLayout->addWidget(far_label);
     vLayout->addWidget(farLayout);
+    vLayout->addWidget(fog_color_label);
+    vLayout->addLayout(fogColorLayout);
 
     cinematic = new QCheckBox();
     cinematic->setText(QStringLiteral("Cinematic Camera"));
@@ -201,6 +262,7 @@ void MainWindow::connectUIElements() {
     connectFar();
 
     // Flowerful UI
+    connectFogColor();
     connectPixel();
     connectCinematic();
     connectUploadSong();
@@ -290,6 +352,65 @@ void MainWindow::connectParam2() {
     connect(p2Slider, &QSlider::valueChanged, this, &MainWindow::onValChangeP2);
     connect(p2Box, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
             this, &MainWindow::onValChangeP2);
+}
+
+void MainWindow::connectFogColor() {
+    connect(redSlider, &QSlider::valueChanged, this, &MainWindow::onValChangeFogRedSlider);
+    connect(redBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
+            this, &MainWindow::onValChangeFogRedBox);
+
+    connect(greenSlider, &QSlider::valueChanged, this, &MainWindow::onValChangeFogGreenSlider);
+    connect(greenBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
+            this, &MainWindow::onValChangeFogGreenBox);
+
+    connect(blueSlider, &QSlider::valueChanged, this, &MainWindow::onValChangeFogBlueSlider);
+    connect(blueBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
+            this, &MainWindow::onValChangeFogBlueBox);
+}
+
+void MainWindow::onValChangeFogRedSlider(int newValue) {
+    redSlider->setValue(newValue);
+    redBox->setValue(newValue);
+    settings.fogColor[0] = redSlider->value() / 255.f;
+    realtime->settingsChanged();
+}
+
+void MainWindow::onValChangeFogRedBox(double newValue) {
+    redBox->setValue(newValue);
+    redSlider->setValue(newValue);
+    settings.fogColor[0] = redSlider->value() / 255.f;
+    realtime->settingsChanged();
+}
+
+
+void MainWindow::onValChangeFogGreenSlider(int newValue) {
+    greenSlider->setValue(newValue);
+    greenBox->setValue(newValue);
+    settings.fogColor[1] = greenSlider->value() / 255.f;
+    realtime->settingsChanged();
+}
+
+void MainWindow::onValChangeFogGreenBox(double newValue) {
+    greenBox->setValue(newValue);
+    greenSlider->setValue(newValue);
+
+    settings.fogColor[1] = greenSlider->value() / 255.f;
+    realtime->settingsChanged();
+}
+
+void MainWindow::onValChangeFogBlueSlider(int newValue) {
+    blueSlider->setValue(newValue);
+    blueBox->setValue(newValue);
+    settings.fogColor[2] = blueSlider->value() / 255.f;
+    realtime->settingsChanged();
+}
+
+void MainWindow::onValChangeFogBlueBox(double newValue) {
+    blueBox->setValue(newValue);
+    blueSlider->setValue(newValue);
+
+    settings.fogColor[2] = blueSlider->value() / 255.f;
+    realtime->settingsChanged();
 }
 
 void MainWindow::connectFar() {

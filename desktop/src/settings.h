@@ -2,6 +2,7 @@
 #define SETTINGS_H
 
 #include <string>
+#include <glm/glm.hpp>
 
 struct Settings {
     // Flowerful Settings
@@ -10,6 +11,8 @@ struct Settings {
     int pixelCount = 128;
     bool pixelate = true;
     bool cinematic = true;
+    float initialBPM = 0;
+    glm::vec3 fogColor = {0, 0.2, 0.5};
 
     // Realtime Settings
     std::string sceneFilepath;

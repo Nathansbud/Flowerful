@@ -28,6 +28,7 @@ private:
     void connectCinematic();
     void connectUploadSong();
     void connectVolume();
+    void connectFogColor();
 
     Realtime *realtime;
     QSlider *p1Slider;
@@ -38,10 +39,19 @@ private:
     QDoubleSpinBox *farBox;
 
     // Flowerful UI
+    QSlider *redSlider;
+    QDoubleSpinBox *redBox;
+
+    QSlider *greenSlider;
+    QDoubleSpinBox *greenBox;
+
+    QSlider *blueSlider;
+    QDoubleSpinBox *blueBox;
+
+
     QSlider *pixelSlider;
     QSpinBox *pixelBox;
     QCheckBox *pixelate;
-
     QCheckBox *cinematic;
 
     QPushButton *uploadSong;
@@ -58,6 +68,13 @@ private slots:
     void onValChangeFarBox(double newValue);
 
     // Flowerful Slots
+    void onValChangeFogRedSlider(int newValue);
+    void onValChangeFogRedBox(double newValue);
+    void onValChangeFogGreenSlider(int newValue);
+    void onValChangeFogGreenBox(double newValue);
+    void onValChangeFogBlueSlider(int newValue);
+    void onValChangeFogBlueBox(double newValue);
+
     void onValChangePixelSlider(int newValue);
     void onValChangePixelBox(int newValue);
     void onPixelate();

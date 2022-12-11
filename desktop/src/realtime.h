@@ -128,11 +128,11 @@ private:
           1, -1, 0,     1, 0,
     };
 
-    glm::vec4 fogColor = {0, 0.2, 0.5, 1};
-
     // Helper fns
     void loadLights();
+
     void drawShapes(std::vector<RenderShapeData>& shapes);
+    void resetShapes(std::vector<RenderShapeData>& shapes);
 
     void refreshShapes();
     void refreshCamera();

@@ -9,9 +9,12 @@
 // Struct which contains data for a single primitive, to be used for rendering
 struct RenderShapeData {
     ScenePrimitive primitive;
+
     glm::mat4 ctm; // the cumulative transformation matrix (ctm)
     glm::mat4 ictm; // the inverse ctm
     glm::mat3 nictm; // transpose, inverse top left ctm
+
+    glm::mat4 ctmInitial; // initial CTM to be used for objects that might translate/rotate
 };
 
 struct TextureData {
