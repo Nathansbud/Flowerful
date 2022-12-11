@@ -44,7 +44,7 @@ uniform int channel;
 uniform bool swapFloor;
 
 void main() {
-    if(channel == 4) {
+    if(textured && channel == 4) {
         if(swapFloor) {
             // might also be nice to just swap?
             vec2 uvUsed = uvPos + 0.1;

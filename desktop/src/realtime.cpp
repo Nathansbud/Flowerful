@@ -116,7 +116,7 @@ void Realtime::initializeGL() {
         ":/resources/shaders/texture.frag"
     );
 
-    bpm = 176 * 2;
+    bpm = settings.initialBPM;
 
     pp_fbo_default = 2;
     pp_fbo_width = size().width() * m_devicePixelRatio;
@@ -334,7 +334,7 @@ void Realtime::drawShapes(std::vector<RenderShapeData>& shapes) {
         glUniform1f(glGetUniformLocation(m_shader, "cShininess"), mat.shininess);
         glUniform1f(glGetUniformLocation(m_shader, "cBlend"), mat.blend);
         glUniform4f(glGetUniformLocation(m_shader, "cameraPos"), camPos.x, camPos.y, camPos.z, 1);
-        glUniform1i(glGetUniformLocation(m_shader, "textured"), mat.textureMap.isUsed);
+        glUniform1i(glGetUniformLocation(m_shader, "textured"), bpm > 0 && mat.textureMap.isUsed);
 
         glDrawArrays(GL_TRIANGLES, 0, primitive_data[SHAPE_ID].size() / 8);
     }
@@ -365,7 +365,6 @@ void Realtime::paintGL() {
 
     glActiveTexture(GL_TEXTURE4);
     glBindTexture(GL_TEXTURE_2D, ground_texture);
-
     drawShapes(renderData.shapes);
 
     for(MushroomData *mush : mushGrid) {
@@ -472,9 +471,28 @@ void Realtime::sceneChanged() {
 
 void Realtime::songChanged() {
     player->pause();
-    player->setSource(QUrl::fromLocalFile(QString::fromStdString(settings.songFilepath)));
-    this->window()->setWindowTitle(QStringLiteral("🎵 song name here (need taglib) 🎵"));
-    player->play();
+    if(!settings.songFilepath.empty()) {
+        player->setSource(QUrl::fromLocalFile(QString::fromStdString(settings.songFilepath)));
+
+        // Hardcode values for the demo
+        std::string windowHeader;
+        if(settings.songFilepath.ends_with("Track0.mp3")) {
+            // Onett Theme
+            bpm = 117 * 2;
+            windowHeader = "🏘️ Onett Theme – Keiichi Suzuki 🏘️";
+        } else if(settings.songFilepath.ends_with("Track1.mp3")) {
+            // Bodys
+            bpm = 144 * 2;
+            windowHeader = "🎵 Bodys – Car Seat Headrest 🎵";
+        } else if(settings.songFilepath.ends_with("Track2.mp3")) {
+            // Pomeranian Spinster
+            bpm = 176 * 2;
+            windowHeader = "🐶 Pomernian Spinster – Alvvays 🐶";
+        }
+
+        this->window()->setWindowTitle(windowHeader.c_str());
+        player->play();
+    }
 }
 
 void Realtime::settingsChanged() {
