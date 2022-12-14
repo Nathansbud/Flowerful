@@ -159,12 +159,11 @@ void MainWindow::initialize() {
     volume_label->setText("Volume");
     volume_label->setFont(font);
 
-    loop = new QCheckBox();
-    loop->setText(QStringLiteral("Loop"));
-    loop->setChecked(true);
-
     QGroupBox *volumeLayout = new QGroupBox();
     QHBoxLayout *lvol = new QHBoxLayout();
+
+    mute = new QCheckBox();
+    mute->setChecked(settings.notMuted);
 
     volumeSlider = new QSlider(Qt::Orientation::Horizontal);
     volumeSlider->setTickInterval(1);
@@ -179,6 +178,7 @@ void MainWindow::initialize() {
     volumeBox->setValue(settings.songVolume);
 
     // Adds the slider and number box to the parameter layouts
+    lvol->addWidget(mute);
     lvol->addWidget(volumeSlider);
     lvol->addWidget(volumeBox);
     volumeLayout->setLayout(lvol);
@@ -189,7 +189,6 @@ void MainWindow::initialize() {
 
     mediaControls->addWidget(cinematic);
     mediaControls->addWidget(uploadSong);
-    mediaControls->addWidget(loop);
     mediaControls->addWidget(volume_label);
     mediaControls->addWidget(volumeLayout);
 
@@ -208,8 +207,6 @@ void MainWindow::connectUIElements() {
     connectCinematic();
     connectUploadSong();
     connectVolume();
-//    connectMute();
-//    connectLoop();
 //    connectPlay();
 //    connectPause();
 
@@ -271,10 +268,16 @@ void MainWindow::onUploadSong() {
     realtime->songChanged();
 }
 
+void MainWindow::onMute() {
+    settings.notMuted = !settings.notMuted;
+    realtime->settingsChanged();
+}
+
 void MainWindow::connectVolume() {
     connect(volumeSlider, &QSlider::valueChanged, this, &MainWindow::onValChangeVolumeSlider);
     connect(volumeBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
             this, &MainWindow::onValChangeVolumeBox);
+    connect(mute,&QCheckBox::clicked, this, &MainWindow::onMute);
 }
 
 void MainWindow::onValChangeVolumeSlider(int newValue) {

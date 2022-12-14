@@ -123,7 +123,7 @@ private:
 
     int pixelCount = settings.pixelCount;
     int pixelVelocity = 1;
-
+    int bounceVelocity = 1;
 
     // fullscreen quad with
     std::vector<GLfloat> screen_quad = {

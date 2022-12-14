@@ -84,21 +84,6 @@ void Camera::reset() {
     computeView();
 }
 
-glm::mat4 rodriguez(float theta, glm::vec3 axis) {
-    float c = cos(theta);
-    float s = sin(theta);
-    float x = axis.x;
-    float y = axis.y;
-    float z = axis.z;
-
-    return glm::mat4(
-        glm::vec4(c + x * x * (1 - c), x * y * (1 - c) + z * s, x * z * (1 - c) - y * s, 0),
-        glm::vec4(x * y * (1 - c) - z * s, y * y * (1 - c) + c, y * z * (1 - c) + x * s, 0),
-        glm::vec4(x * z * (1 - c) + y * s, y * z * (1 - c) - x * s, z * z * (1 - c) + c, 0),
-        glm::vec4(0, 0, 0, 1)
-    );
-}
-
 void Camera::rotate(float deltaX, float deltaY) {
     if(!this->initialized) return;
     if(deltaX != 0 || deltaY != 0) {

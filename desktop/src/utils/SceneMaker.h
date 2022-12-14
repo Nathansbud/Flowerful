@@ -6,6 +6,7 @@
 #include <string>
 #include <map>
 #include <random>
+#include "camera.h"
 #include "rgba.h"
 
 
@@ -24,8 +25,8 @@ class SceneMaker {
 public:
    static MushroomData* generateMushroom(int variant, float xOffset, float zOffset);
    static std::vector<MushroomData*> generateScene(int gridLength, int gridHeight, int gridDistance);
-   static void rotateMushroom(MushroomData* shroom, glm::vec4 look, float angle);
    static void translateMushroom(MushroomData* shroom, float y);
-   static void bounceMushroom(MushroomData* shroom, glm::vec4 look, float angle);
+   static void rotateMushroom(MushroomData* shroom, float angle);
+   static void bounceMushroom(MushroomData* shroom, float angle);
 };
 

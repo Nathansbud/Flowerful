@@ -43,8 +43,11 @@ Realtime::Realtime(QWidget *parent)
     player = new QMediaPlayer;
     audioOutput = new QAudioOutput;
 
+    parent->setWindowTitle("Mysterious Forest")
+
     player->setAudioOutput(audioOutput);
     audioOutput->setVolume(settings.songVolume / 100.f);
+    audioOutput->setMuted(!settings.notMuted);
     songChanged();
 }
 
@@ -369,9 +372,9 @@ void Realtime::paintGL() {
     for(MushroomData *mush : mushGrid) {
         if(mush != nullptr) {
             switch(mush->variant) {
-                case 1: SceneMaker::bounceMushroom(mush, camera.getLook(), rotate_angle); break;
+                case 1: SceneMaker::bounceMushroom(mush, glm::radians(rotate_angle)); break;
                 case 2: SceneMaker::translateMushroom(mush, translate); break;
-                case 3: SceneMaker::rotateMushroom(mush, camera.getLook(), rotate_angle); break;
+                case 3: SceneMaker::rotateMushroom(mush, glm::radians(rotate_angle)); break;
                 default: break;
             }
 
@@ -395,11 +398,6 @@ void Realtime::paintGL() {
 
     glUniform1i(glGetUniformLocation(pp_shader, "width"), pp_fbo_width);
     glUniform1i(glGetUniformLocation(pp_shader, "height"), pp_fbo_height);
-
-    glUniform1i(glGetUniformLocation(pp_shader, "greyscale"), settings.perPixelFilter);
-    glUniform1i(glGetUniformLocation(pp_shader, "invert"), settings.extraCredit1);
-    glUniform1i(glGetUniformLocation(pp_shader, "boxBlur"), settings.kernelBasedFilter);
-    glUniform1i(glGetUniformLocation(pp_shader, "sharpen"), settings.extraCredit2);
     glUniform1i(glGetUniformLocation(pp_shader, "pixels"),
                 !settings.animatePixels ? settings.pixelCount : pixelCount);
     glUniform1i(glGetUniformLocation(pp_shader, "pixelate"), settings.pixelate);
@@ -492,7 +490,7 @@ void Realtime::songChanged() {
         } else if(settings.songFilepath.ends_with("Track2.mp3")) {
             // Pomeranian Spinster
             bpm = 176 * 2;
-            windowHeader = "🐶 Pomernian Spinster – Alvvays 🐶";
+            windowHeader = "🐶 Pomeranian Spinster – Alvvays 🐶";
         }
 
         this->window()->setWindowTitle(windowHeader.c_str());
@@ -503,6 +501,10 @@ void Realtime::songChanged() {
 void Realtime::settingsChanged() {
     if(settings.songVolume != storedSettings.songVolume) {
         audioOutput->setVolume(settings.songVolume / 100.f);
+    }
+
+    if(settings.notMuted != storedSettings.notMuted) {
+        audioOutput->setMuted(!settings.notMuted);
     }
 
     if(initialized) {

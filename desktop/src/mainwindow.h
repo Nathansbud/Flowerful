@@ -56,7 +56,7 @@ private:
     QCheckBox *cinematic;
 
     QPushButton *uploadSong;
-    QCheckBox *loop;
+    QCheckBox *mute;
 
     QSlider *volumeSlider;
     QSpinBox *volumeBox;
@@ -82,9 +82,10 @@ private slots:
     void onPixelate();
     void onAnimatePixels();
     void onCinematic();
+    void onMute();
 
     void onUploadSong();
-
     void onValChangeVolumeSlider(int newValue);
     void onValChangeVolumeBox(int newValue);
+
 };

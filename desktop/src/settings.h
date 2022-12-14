@@ -11,6 +11,8 @@ struct Settings {
     bool pixelate = true;
     bool cinematic = true;
     bool animatePixels = false;
+    bool notMuted = true;
+
     glm::vec3 fogColor = {0, 0.2, 0.5};
 
     std::string songFilepath = "../desktop/resources/demo/audio/Nature.mp3";
