@@ -85,7 +85,7 @@ MushroomData* SceneMaker::generateMushroom(int variant, float xOffset, float zOf
 
     // make the mushroom
     mushroom = new MushroomData;
-    mushroom->pieces = std::vector<RenderShapeData>{mushtop, mushstem};
+    mushroom->pieces = std::vector<RenderShapeData>{mushstem, mushtop};
 
     // extra hat!
     if(variant == 3)  {        
@@ -157,13 +157,44 @@ void SceneMaker::rotateMushroom(MushroomData* shroom, glm::vec4 look, float angl
     }
 }
 
-void SceneMaker::translateMushroom(MushroomData* shroom, float y) {
-    glm::mat4 translate = glm::mat4({1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, y, 0, 1});
+void SceneMaker::rotateMushroom2(MushroomData* shroom, glm::vec4 look, float angle) {
+    angle = glm::radians(angle);
+    float c = cos(angle);
+    float s = sin(angle);
+    float x = 0;
+    float y = 0;
+    float z = 1;
+    glm::mat4 rotate = glm::mat4({(c + x*x*(1-c)), (x*y*(1-c)+z*s), (x*z*(1-c) - y*s), 0},
+                                 {(x*y*(1-c)+z*s), (c + y*y*(1-c)), (y*z*(1-c) - x*s), 0},
+                                 {(x*z*(1-c)+y*s), (y*z*(1-c) - x*s), (c + z*z*(1-c)), 0},
+                                 {0, 0, 0, 1});
+    glm::mat4 sctm = shroom->pieces[0].ctm;
     for (int i = 0; i < (shroom->pieces).size(); i++) {
-        // if cap
+        glm::mat4 oldctm = shroom->pieces[i].ctm;
+        glm::mat4 newctm;
+        glm::mat4 up5 = glm::mat4({1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0.5, 0, 1});
+        glm::mat4 down5 = glm::mat4({1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, -0.5, 0, 1});
+        if(shroom->pieces[i].primitive.type == PrimitiveType::PRIMITIVE_CYLINDER) {
+            newctm = oldctm * rotate;
+        } else if(shroom->pieces[i].primitive.type == PrimitiveType::PRIMITIVE_MUSHTOP) {
+            newctm = sctm * down5 * rotate * up5 * glm::inverse(sctm) * oldctm;
+
+        }
+        shroom->pieces[i].ctm = newctm;
+        shroom->pieces[i].ictm = glm::inverse(newctm),
+        shroom->pieces[i].nictm = glm::inverse(glm::transpose(newctm));
+    }
+
         // sctm * translate down by 1 * rotate * translate up by 1 * sctm-1 * ctm
         // if stem
         // sctm * translate up by 0.5 * rotate
+
+}
+
+void SceneMaker::translateMushroom(MushroomData* shroom, float y) {
+    glm::mat4 translate = glm::mat4({1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, y, 0, 1});
+    for (int i = 0; i < (shroom->pieces).size(); i++) {
+
         glm::mat4 oldctm = shroom->pieces[i].ctm;
         glm::mat4 newctm = translate * oldctm;
 

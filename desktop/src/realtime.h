@@ -64,6 +64,7 @@ private:
 
     // Tick Related Variables
     int m_timer;                                        // Stores timer which attempts to run ~60 times per second
+    float time;
     QElapsedTimer m_elapsedTimer;                       // Stores timer which keeps track of actual time between frames
 
     // Input Related Variables
@@ -116,6 +117,8 @@ private:
     float rotate_angle;
     float translate;
     float translate_total;
+    float rotate;
+    float rotate_total;
     bool translate_increase = true;
 
     // fullscreen quad with

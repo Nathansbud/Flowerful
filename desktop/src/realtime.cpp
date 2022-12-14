@@ -175,7 +175,7 @@ void Realtime::initializeGL() {
 
     SceneParser::loadTexturesFromPaths(renderData.textures, mushPaths);
 
-    std::string path = "../desktop/resources/textures/disco.jpg";
+    std::string path = "../desktop/resources/textures/dancefloor.png";
     TextureData& gt = renderData.textures.at(path);
 
     glGenTextures(1, &ground_texture);
@@ -371,6 +371,7 @@ void Realtime::paintGL() {
         if(mush != nullptr) {
             if(mush->variant == 3) SceneMaker::rotateMushroom(mush, camera.getLook(), rotate_angle);
             if(mush->variant == 2) SceneMaker::translateMushroom(mush, translate);
+            if(mush->variant == 1) SceneMaker::rotateMushroom2(mush, camera.getLook(), rotate_angle);
             glUniform1i(glGetUniformLocation(m_shader, "channel"), mush->variant);
             glActiveTexture(GL_TEXTURE0 + mush->variant);
             glBindTexture(GL_TEXTURE_2D, mushroom_textures[mush->variant]);
@@ -573,6 +574,7 @@ void Realtime::mouseMoveEvent(QMouseEvent *event) {
 void Realtime::timerEvent(QTimerEvent *event) {
     int elapsedms = m_elapsedTimer.elapsed();
     float deltaTime = elapsedms * 0.001f;
+    time += deltaTime;
     m_elapsedTimer.restart();
 
     // Use deltaTime and m_keyMap here to move around
@@ -603,17 +605,14 @@ void Realtime::timerEvent(QTimerEvent *event) {
 
     rotate_angle = 90 * bps * deltaTime;
 
-    // make it a sin wave
-    if(translate_increase) {
-        translate = fmin(bps * deltaTime * maxhop, maxhop-translate_total);
-        translate_total += translate;
-    }
-    else {
-        translate = fmax(-bps * deltaTime * maxhop, -maxhop-translate_total);
-        translate_total += translate;
-    }
 
-    if(fabs(translate_total) >= maxhop) translate_increase = !translate_increase;
+    // make it a sin wave
+    float newLocation = maxhop * sin(2 * bps * time);
+    float newRotation = 15 * sin(2 * bps * time);
+    translate = newLocation - translate_total;
+    rotate = newRotation - rotate_total;
+    rotate_total += rotate;
+    translate_total += translate;
 
     update(); // asks for a PaintGL() call to occur
 }
