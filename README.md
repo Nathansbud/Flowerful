@@ -2,6 +2,10 @@
 
 This repository holds the final project submission for CSCI 1230 for [Zack Amiton](https://github.com/Nathansbud) (zamiton) & [Eva Schiller](https://github.com/eschill04) (eschill04). 
 
+## Demo
+
+[See our demo here!](https://drive.google.com/file/d/15TZoci7ev9qxXlq98DYjk3240md9n3Yp/view?usp=sharing)
+
 ## Installation
 
 - This project requires the [Qt Multimedia](https://doc.qt.io/qt-6/qtmultimedia-index.html) library, which is not installed by default
