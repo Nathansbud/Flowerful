@@ -39,13 +39,15 @@ uniform float fogMin;
 uniform bool textured;
 
 // 0, 1, 2, 3 = Mushroom Variant, 4 = Ground Texture
-uniform sampler2D[5] sceneTextures;
+uniform sampler2D[6] sceneTextures;
 uniform int channel;
 uniform bool swapFloor;
 uniform float time;
 
 void main() {
-    if(textured && channel == 4) {
+    if(!textured && channel == 4) {
+        fragColor = texture(sceneTextures[channel + 1], uvPos);
+    } else if(channel == 4) {
         if(swapFloor) {
             // might also be nice to just swap?
             vec2 uvUsed = uvPos + 0.1;

@@ -71,6 +71,7 @@ void Realtime::finish() {
     glDeleteBuffers(1, &screen_vbo);
 
     glDeleteTextures(1, &ground_texture);
+    glDeleteTextures(1, &dirt_texture);
     glDeleteTextures(4, mushroom_textures);
 
     for(int i = 0; i < mushGrid.size(); i++) {
@@ -132,6 +133,7 @@ void Realtime::initializeGL() {
     glUniform1i(glGetUniformLocation(m_shader, "sceneTextures[2]"), 2);
     glUniform1i(glGetUniformLocation(m_shader, "sceneTextures[3]"), 3);
     glUniform1i(glGetUniformLocation(m_shader, "sceneTextures[4]"), 4);
+    glUniform1i(glGetUniformLocation(m_shader, "sceneTextures[5]"), 5);
     glUseProgram(0);
 
     // generate vbo buffers
@@ -169,18 +171,30 @@ void Realtime::initializeGL() {
         "../desktop/resources/textures/mushroom0.jpg",
         "../desktop/resources/textures/mushroom1.jpg",
         "../desktop/resources/textures/mushroom2.jpg",
-        "../desktop/resources/textures/mushroom3.jpg"
+        "../desktop/resources/textures/mushroom3.jpg",
+        "../desktop/resources/textures/disco.jpg",
+        "../desktop/resources/textures/forest.jpg"
     };
 
     SceneParser::loadTexturesFromPaths(renderData.textures, mushPaths);
 
-    std::string path = "../desktop/resources/textures/disco.jpg";
-    TextureData& gt = renderData.textures.at(path);
+    TextureData& gt = renderData.textures.at("../desktop/resources/textures/disco.jpg");
+    TextureData& dt = renderData.textures.at("../desktop/resources/textures/forest.jpg");
 
     glGenTextures(1, &ground_texture);
     glActiveTexture(GL_TEXTURE4);
     glBindTexture(GL_TEXTURE_2D, ground_texture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, gt.width, gt.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, gt.textureMap.data());
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    glGenTextures(1, &dirt_texture);
+    glActiveTexture(GL_TEXTURE5);
+    glBindTexture(GL_TEXTURE_2D, dirt_texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, dt.width, dt.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, dt.textureMap.data());
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -363,8 +377,8 @@ void Realtime::paintGL() {
     glUniform1i(glGetUniformLocation(m_shader, "swapFloor"), translate_increase);
     glUniform1f(glGetUniformLocation(m_shader, "time"), time);
 
-    glActiveTexture(GL_TEXTURE4);
-    glBindTexture(GL_TEXTURE_2D, ground_texture);
+    glActiveTexture(GL_TEXTURE4 + (bpm == 0));
+    glBindTexture(GL_TEXTURE_2D, bpm > 0 ? ground_texture : dirt_texture);
     drawShapes(renderData.shapes);
 
     for(MushroomData *mush : mushGrid) {

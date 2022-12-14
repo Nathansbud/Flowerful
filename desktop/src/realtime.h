@@ -105,12 +105,8 @@ private:
 
     // Textures
     GLuint ground_texture;
-    int ground_texture_width;
-    int ground_texture_height;
-
+    GLuint dirt_texture;
     GLuint mushroom_textures[4];
-    int mushroom_texture_width;
-    int mushroom_texture_height;
 
     // movement globals
     float bpm;
