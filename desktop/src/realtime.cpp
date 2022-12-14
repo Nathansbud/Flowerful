@@ -339,8 +339,8 @@ void Realtime::drawShapes(std::vector<RenderShapeData>& shapes) {
         glBindVertexArray(primitive_vaos[SHAPE_ID]);
         glUniformMatrix4fv(glGetUniformLocation(m_shader, "modelMatrix"), 1, GL_FALSE, &(shape.ctm[0][0]));
         glUniformMatrix3fv(glGetUniformLocation(m_shader, "normMatrix"), 1, GL_FALSE, &(shape.nictm[0][0]));
-
         SceneMaterial& mat = shape.primitive.material;
+
         glUniform4f(glGetUniformLocation(m_shader, "cAmbient"), mat.cAmbient.r, mat.cAmbient.g, mat.cAmbient.b, mat.cAmbient.a);
         glUniform4f(glGetUniformLocation(m_shader, "cDiffuse"), mat.cDiffuse.r, mat.cDiffuse.g, mat.cDiffuse.b, mat.cDiffuse.a);
         glUniform4f(glGetUniformLocation(m_shader, "cSpecular"), mat.cSpecular.r, mat.cSpecular.g, mat.cSpecular.b, mat.cSpecular.a);
@@ -393,6 +393,12 @@ void Realtime::paintGL() {
             glUniform1i(glGetUniformLocation(m_shader, "channel"), mush->variant);
             glActiveTexture(GL_TEXTURE0 + mush->variant);
             glBindTexture(GL_TEXTURE_2D, mushroom_textures[mush->variant]);
+            if(bpm > 0) {
+                for(RenderShapeData &shape : mush->pieces) {
+                    if(shape.primitive.type == PrimitiveType::PRIMITIVE_CYLINDER) shape.primitive.material = mush->stemcolor2;
+                    if(shape.primitive.type == PrimitiveType::PRIMITIVE_MUSHTOP) shape.primitive.material = mush->mushcolor2;
+                }
+            }
             drawShapes(mush->pieces);
         }
     }
