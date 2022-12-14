@@ -370,7 +370,7 @@ void Realtime::paintGL() {
     for(MushroomData *mush : mushGrid) {
         if(mush != nullptr) {
             switch(mush->variant) {
-                case 1: SceneMaker::bounceMushroom(mush, glm::radians(rotate_angle)); break;
+                case 1: SceneMaker::bounceMushroom(mush, glm::radians(rotate)); break;
                 case 2: SceneMaker::translateMushroom(mush, translate); break;
                 case 3: SceneMaker::rotateMushroom(mush, glm::radians(rotate_angle)); break;
                 default: break;
@@ -607,7 +607,7 @@ void Realtime::timerEvent(QTimerEvent *event) {
     if(!settings.cinematic) {
         camera.move(W * 1 + S * -1, A * -1 + D * 1, SPACE * 1 + CTRL * -1, 5 * deltaTime);
     } else {
-        camera.cinematic(W + -S, 5 * deltaTime);
+        camera.cinematic(W + -S, 2.5 * deltaTime);
     }
 
     // bpm = 60; start at 15 at 0 beats, want to get to -15 in 1 beat
