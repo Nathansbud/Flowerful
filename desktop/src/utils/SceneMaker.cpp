@@ -14,10 +14,20 @@ const std::vector<glm::vec4> props = {
     glm::vec4(0.941, 0, 1, 1)
 };
 
+const std::vector<glm::vec4> browns = {
+    glm::vec4(0.918, 0.867, 0.792, 1),
+    glm::vec4(0.855, 0.627, 0.427, 1),
+    glm::vec4(0.757, 0.604, 0.42, 1),
+    glm::vec4(0.435, 0.306, 0.216, 1),
+    glm::vec4(0.761, 0.698, 0.502, 1),
+    glm::vec4(0.663, 0.361, 0.408, 1)
+};
+
 std::random_device rd;
 std::mt19937 gen(rd());
 std::uniform_real_distribution<> f(0, 1);
 std::uniform_int_distribution<> colorIdx(0, props.size() - 1);
+std::uniform_int_distribution<> earthIdx(0, browns.size() - 1);
 std::uniform_int_distribution<> mushIdx(0, 3);
 
 MushroomData* SceneMaker::generateMushroom(int variant, float xOffset, float zOffset) {
@@ -35,6 +45,14 @@ MushroomData* SceneMaker::generateMushroom(int variant, float xOffset, float zOf
         .textureMap = mushroomTexture
     };
 
+    SceneMaterial mushterial = SceneMaterial{
+        .cAmbient = browns[earthIdx(gen)],
+        .cDiffuse = browns[earthIdx(gen)],
+        .cSpecular = browns[earthIdx(gen)],
+        .shininess = (float) f(gen),
+        .textureMap = mushroomTexture
+    };
+
     SceneMaterial stemterial = SceneMaterial{
         .cAmbient = props[colorIdx(gen)],
         .cDiffuse = props[colorIdx(gen)],
@@ -42,11 +60,19 @@ MushroomData* SceneMaker::generateMushroom(int variant, float xOffset, float zOf
         .shininess = (float) f(gen)
     };
 
+    SceneMaterial stemterial2 = SceneMaterial{
+        .cAmbient = browns[earthIdx(gen)],
+        .cDiffuse = browns[earthIdx(gen)],
+        .cSpecular = browns[earthIdx(gen)],
+        .shininess = (float) f(gen),
+    };
+
+
     MushroomData* mushroom = nullptr;
 
     // make primitives
-    ScenePrimitive mushtop_prim = ScenePrimitive{.type=PrimitiveType::PRIMITIVE_MUSHTOP, .material = shroomterial};
-    ScenePrimitive mushstem_prim = ScenePrimitive{.type=PrimitiveType::PRIMITIVE_CYLINDER, .material = stemterial};
+    ScenePrimitive mushtop_prim = ScenePrimitive{.type=PrimitiveType::PRIMITIVE_MUSHTOP, .material = mushterial};
+    ScenePrimitive mushstem_prim = ScenePrimitive{.type=PrimitiveType::PRIMITIVE_CYLINDER, .material = stemterial2};
 
     // make shrinking matrix
     glm::mat4 scaleall = glm::mat4({0.2, 0, 0, 0}, {0, 0.2, 0, 0}, {0, 0, 0.2, 0}, {0, 0, 0, 1});
@@ -106,6 +132,8 @@ MushroomData* SceneMaker::generateMushroom(int variant, float xOffset, float zOf
     }
 
     mushroom->variant = variant;
+    mushroom->mushcolor2 = shroomterial;
+    mushroom->stemcolor2 = stemterial;
 
     return mushroom;
 }

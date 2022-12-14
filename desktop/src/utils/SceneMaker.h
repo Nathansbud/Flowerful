@@ -12,6 +12,8 @@
 
 struct MushroomData {
     int variant;
+    SceneMaterial mushcolor2;
+    SceneMaterial stemcolor2;
     std::vector<RenderShapeData> pieces;
     std::map<std::string, TextureData> textures;
 };
