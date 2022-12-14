@@ -1,6 +1,7 @@
 #version 330 core
 
 in vec2 uvPos;
+in vec2 imgPos;
 uniform sampler2D tex;
 //uniform sampler2D bloom;
 
@@ -15,6 +16,7 @@ uniform int height;
 
 uniform bool pixelate;
 uniform int pixels;
+uniform float time;
 
 out vec4 fragColor;
 

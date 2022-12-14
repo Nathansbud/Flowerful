@@ -42,6 +42,7 @@ uniform bool textured;
 uniform sampler2D[5] sceneTextures;
 uniform int channel;
 uniform bool swapFloor;
+uniform float time;
 
 void main() {
     if(textured && channel == 4) {
@@ -93,6 +94,12 @@ void main() {
 
         fragColor[3] = 1;
         float fogFactor = clamp((fogMax - lc) / (fogMax - fogMin), 0, 1);
-        fragColor = mix(fogColor, fragColor, fogFactor);
+
+        // channel 0 mushroom => rainbow variation
+        if(channel == 0 && textured) {
+            fragColor = mix(fogColor, mod(fragColor + time, 1.0), fogFactor);
+        } else {
+            fragColor = mix(fogColor, fragColor, fogFactor);
+        }
     }
 }

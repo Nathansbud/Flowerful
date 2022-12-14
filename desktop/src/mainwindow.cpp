@@ -15,77 +15,24 @@ void MainWindow::initialize() {
     QHBoxLayout *hLayout = new QHBoxLayout; // horizontal alignment
 
     QVBoxLayout *vLayout = new QVBoxLayout(); // vertical alignment
-    QVBoxLayout *flowerControls = new QVBoxLayout();
+    QVBoxLayout *mediaControls = new QVBoxLayout();
 
     vLayout->setAlignment(Qt::AlignTop);
-    flowerControls->setAlignment(Qt::AlignTop);
+    mediaControls->setAlignment(Qt::AlignTop);
 
     hLayout->addLayout(vLayout);
     hLayout->addWidget(realtime, 1);
-    hLayout->addLayout(flowerControls);
+    hLayout->addLayout(mediaControls);
 
     this->setLayout(hLayout);
 
     // Create labels in sidebox
     QFont font;
     font.setPointSize(12);
-    font.setBold(true);
-    QLabel *tesselation_label = new QLabel(); // Parameters label
-    tesselation_label->setText("Tesselation");
-    tesselation_label->setFont(font);
-
-    QLabel *camera_label = new QLabel(); // Camera label
-    camera_label->setText("Camera");
-    camera_label->setFont(font);
-
-    QLabel *param1_label = new QLabel(); // Parameter 1 label
-    param1_label->setText("Parameter 1:");
-    QLabel *param2_label = new QLabel(); // Parameter 2 label
-    param2_label->setText("Parameter 2:");
+    font.setBold(true); 
 
     QLabel *far_label = new QLabel(); // Far plane label
     far_label->setText("Fog Maximum:");
-
-
-    // Creates the boxes containing the parameter sliders and number boxes
-    QGroupBox *p1Layout = new QGroupBox(); // horizonal slider 1 alignment
-    QHBoxLayout *l1 = new QHBoxLayout();
-    QGroupBox *p2Layout = new QGroupBox(); // horizonal slider 2 alignment
-    QHBoxLayout *l2 = new QHBoxLayout();
-
-    // Create slider controls to control parameters
-    p1Slider = new QSlider(Qt::Orientation::Horizontal); // Parameter 1 slider
-    p1Slider->setTickInterval(1);
-    p1Slider->setMinimum(1);
-    p1Slider->setMaximum(25);
-    p1Slider->setValue(settings.shapeParameter1);
-
-    p1Box = new QSpinBox();
-    p1Box->setMinimum(1);
-    p1Box->setMaximum(25);
-    p1Box->setSingleStep(1);
-    p1Box->setValue(settings.shapeParameter1);
-
-    p2Slider = new QSlider(Qt::Orientation::Horizontal); // Parameter 2 slider
-    p2Slider->setTickInterval(1);
-    p2Slider->setMinimum(1);
-    p2Slider->setMaximum(25);
-    p2Slider->setValue(settings.shapeParameter2);
-
-    p2Box = new QSpinBox();
-    p2Box->setMinimum(1);
-    p2Box->setMaximum(25);
-    p2Box->setSingleStep(1);
-    p2Box->setValue(settings.shapeParameter2);
-
-    // Adds the slider and number box to the parameter layouts
-    l1->addWidget(p1Slider);
-    l1->addWidget(p1Box);
-    p1Layout->setLayout(l1);
-
-    l2->addWidget(p2Slider);
-    l2->addWidget(p2Box);
-    p2Layout->setLayout(l2);
 
     QGroupBox *farLayout = new QGroupBox(); // horizonal far slider alignment
     QHBoxLayout *lfar = new QHBoxLayout();
@@ -105,7 +52,6 @@ void MainWindow::initialize() {
     lfar->addWidget(farSlider);
     lfar->addWidget(farBox);
     farLayout->setLayout(lfar);
-
 
     QLabel *fog_color_label = new QLabel(); // Far plane label
     fog_color_label->setText("Fog Color (R, G, B):");
@@ -165,12 +111,6 @@ void MainWindow::initialize() {
     fogColorLayout->addLayout(lg);
     fogColorLayout->addLayout(lb);
 
-    vLayout->addWidget(tesselation_label);
-    vLayout->addWidget(param1_label);
-    vLayout->addWidget(p1Layout);
-    vLayout->addWidget(param2_label);
-    vLayout->addWidget(p2Layout);
-    vLayout->addWidget(camera_label);
     vLayout->addWidget(far_label);
     vLayout->addWidget(farLayout);
     vLayout->addWidget(fog_color_label);
@@ -201,6 +141,10 @@ void MainWindow::initialize() {
 
     pixelate = new QCheckBox();
     pixelate->setChecked(settings.pixelate);
+
+    animatePixels = new QCheckBox();
+    animatePixels->setText(QStringLiteral("Animate Pixels (Shroom Mode)"));
+    animatePixels->setChecked(settings.animatePixels);
 
     // Adds the slider and number box to the parameter layouts
     lpix->addWidget(pixelate);
@@ -239,13 +183,15 @@ void MainWindow::initialize() {
     lvol->addWidget(volumeBox);
     volumeLayout->setLayout(lvol);
 
-    flowerControls->addWidget(cinematic);
-    flowerControls->addWidget(pixel_label);
-    flowerControls->addWidget(pixelLayout);
-    flowerControls->addWidget(uploadSong);
-    flowerControls->addWidget(loop);
-    flowerControls->addWidget(volume_label);
-    flowerControls->addWidget(volumeLayout);
+    vLayout->addWidget(pixel_label);
+    vLayout->addWidget(pixelLayout);
+    vLayout->addWidget(animatePixels);
+
+    mediaControls->addWidget(cinematic);
+    mediaControls->addWidget(uploadSong);
+    mediaControls->addWidget(loop);
+    mediaControls->addWidget(volume_label);
+    mediaControls->addWidget(volumeLayout);
 
     connectUIElements();
 }
@@ -256,12 +202,7 @@ void MainWindow::finish() {
 }
 
 void MainWindow::connectUIElements() {
-    // Realtime UI
-    connectParam1();
-    connectParam2();
     connectFar();
-
-    // Flowerful UI
     connectFogColor();
     connectPixel();
     connectCinematic();
@@ -279,6 +220,7 @@ void MainWindow::connectPixel() {
     connect(pixelBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
             this, &MainWindow::onValChangePixelBox);
     connect(pixelate, &QCheckBox::clicked, this, &MainWindow::onPixelate);
+    connect(animatePixels, &QCheckBox::clicked, this, &MainWindow::onAnimatePixels);
 }
 
 void MainWindow::onPixelate() {
@@ -295,6 +237,11 @@ void MainWindow::onValChangePixelSlider(int newValue) {
 void MainWindow::onValChangePixelBox(int newValue) {
     pixelSlider->setValue(newValue);
     settings.pixelCount = pixelBox->value();
+    realtime->settingsChanged();
+}
+
+void MainWindow::onAnimatePixels() {
+    settings.animatePixels = !settings.animatePixels;
     realtime->settingsChanged();
 }
 

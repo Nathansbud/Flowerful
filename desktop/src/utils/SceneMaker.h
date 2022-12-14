@@ -26,6 +26,6 @@ public:
    static std::vector<MushroomData*> generateScene(int gridLength, int gridHeight, int gridDistance);
    static void rotateMushroom(MushroomData* shroom, glm::vec4 look, float angle);
    static void translateMushroom(MushroomData* shroom, float y);
-   static void rotateMushroom2(MushroomData* shroom, glm::vec4 look, float angle);
+   static void bounceMushroom(MushroomData* shroom, glm::vec4 look, float angle);
 };
 

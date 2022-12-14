@@ -48,10 +48,11 @@ private:
     QSlider *blueSlider;
     QDoubleSpinBox *blueBox;
 
-
     QSlider *pixelSlider;
     QSpinBox *pixelBox;
     QCheckBox *pixelate;
+    QCheckBox *animatePixels;
+
     QCheckBox *cinematic;
 
     QPushButton *uploadSong;
@@ -77,7 +78,9 @@ private slots:
 
     void onValChangePixelSlider(int newValue);
     void onValChangePixelBox(int newValue);
+
     void onPixelate();
+    void onAnimatePixels();
     void onCinematic();
 
     void onUploadSong();

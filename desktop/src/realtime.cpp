@@ -45,7 +45,7 @@ Realtime::Realtime(QWidget *parent)
 
     player->setAudioOutput(audioOutput);
     audioOutput->setVolume(settings.songVolume / 100.f);
-    player->play();
+    songChanged();
 }
 
 void Realtime::finish() {
@@ -80,8 +80,6 @@ void Realtime::finish() {
 }
 
 void Realtime::initializeGL() {
-    getSongMetadata();
-
     m_devicePixelRatio = this->devicePixelRatio();
 
     m_timer = startTimer(1000/60);
@@ -175,7 +173,7 @@ void Realtime::initializeGL() {
 
     SceneParser::loadTexturesFromPaths(renderData.textures, mushPaths);
 
-    std::string path = "../desktop/resources/textures/dancefloor.png";
+    std::string path = "../desktop/resources/textures/disco.png";
     TextureData& gt = renderData.textures.at(path);
 
     glGenTextures(1, &ground_texture);
@@ -362,6 +360,7 @@ void Realtime::paintGL() {
 
     glUniform1i(glGetUniformLocation(m_shader, "channel"), 4);
     glUniform1i(glGetUniformLocation(m_shader, "swapFloor"), translate_increase);
+    glUniform1f(glGetUniformLocation(m_shader, "time"), time);
 
     glActiveTexture(GL_TEXTURE4);
     glBindTexture(GL_TEXTURE_2D, ground_texture);
@@ -369,9 +368,13 @@ void Realtime::paintGL() {
 
     for(MushroomData *mush : mushGrid) {
         if(mush != nullptr) {
-            if(mush->variant == 3) SceneMaker::rotateMushroom(mush, camera.getLook(), rotate_angle);
-            if(mush->variant == 2) SceneMaker::translateMushroom(mush, translate);
-            if(mush->variant == 1) SceneMaker::rotateMushroom2(mush, camera.getLook(), rotate_angle);
+            switch(mush->variant) {
+                case 1: SceneMaker::bounceMushroom(mush, camera.getLook(), rotate_angle); break;
+                case 2: SceneMaker::translateMushroom(mush, translate); break;
+                case 3: SceneMaker::rotateMushroom(mush, camera.getLook(), rotate_angle); break;
+                default: break;
+            }
+
             glUniform1i(glGetUniformLocation(m_shader, "channel"), mush->variant);
             glActiveTexture(GL_TEXTURE0 + mush->variant);
             glBindTexture(GL_TEXTURE_2D, mushroom_textures[mush->variant]);
@@ -397,7 +400,8 @@ void Realtime::paintGL() {
     glUniform1i(glGetUniformLocation(pp_shader, "invert"), settings.extraCredit1);
     glUniform1i(glGetUniformLocation(pp_shader, "boxBlur"), settings.kernelBasedFilter);
     glUniform1i(glGetUniformLocation(pp_shader, "sharpen"), settings.extraCredit2);
-    glUniform1i(glGetUniformLocation(pp_shader, "pixels"), settings.pixelCount);
+    glUniform1i(glGetUniformLocation(pp_shader, "pixels"),
+                !settings.animatePixels ? settings.pixelCount : pixelCount);
     glUniform1i(glGetUniformLocation(pp_shader, "pixelate"), settings.pixelate);
 
     glBindVertexArray(screen_vao);
@@ -476,7 +480,7 @@ void Realtime::songChanged() {
         player->setSource(QUrl::fromLocalFile(QString::fromStdString(settings.songFilepath)));
 
         // Hardcode values for the demo
-        std::string windowHeader;
+        std::string windowHeader = "?????";
         if(settings.songFilepath.ends_with("Track0.mp3")) {
             // Onett Theme
             bpm = 117 * 2;
@@ -510,15 +514,14 @@ void Realtime::settingsChanged() {
         if(settings.farPlane != storedSettings.farPlane || settings.nearPlane != storedSettings.nearPlane) {
             camera.updateFrustum(size().width(), size().height(), settings.nearPlane, settings.farPlane);
         }
+
+        if(settings.animatePixels != storedSettings.animatePixels) {
+            pixelCount = settings.pixelCount;
+        }
     }
 
-
-
-    update(); // asks for a PaintGL() call to occur
     storedSettings = settings;
 }
-
-// ================== Project 6: Action!
 
 void Realtime::keyPressEvent(QKeyEvent *event) {
     m_keyMap[Qt::Key(event->key())] = true;
@@ -571,6 +574,16 @@ void Realtime::mouseMoveEvent(QMouseEvent *event) {
     }
 }
 
+float clamp(float v, float min, float max) {
+    if(v >= min && v <= max) {
+        return v;
+    } else if(v < min) {
+        return min;
+    }
+
+    return max;
+}
+
 void Realtime::timerEvent(QTimerEvent *event) {
     int elapsedms = m_elapsedTimer.elapsed();
     float deltaTime = elapsedms * 0.001f;
@@ -578,7 +591,6 @@ void Realtime::timerEvent(QTimerEvent *event) {
     m_elapsedTimer.restart();
 
     // Use deltaTime and m_keyMap here to move around
-
     bool W = m_keyMap[Qt::Key_W];
     bool A = m_keyMap[Qt::Key_A];
     bool S = m_keyMap[Qt::Key_S];
@@ -605,25 +617,33 @@ void Realtime::timerEvent(QTimerEvent *event) {
 
     rotate_angle = 90 * bps * deltaTime;
 
-
     // make it a sin wave
-    float newLocation = maxhop * sin(2 * bps * time);
-    float newRotation = 15 * sin(2 * bps * time);
+    float sv = sin(2 * bps * time);
+
+    float newLocation = maxhop * sv;
+    float newRotation = 15 * sv;
+
     translate = newLocation - translate_total;
     rotate = newRotation - rotate_total;
+
     rotate_total += rotate;
+
     translate_total += translate;
+    translate_total = clamp(translate_total, -0.2, 0.2);
+
+    if(settings.animatePixels) {
+        pixelCount += pixelVelocity;
+        if(pixelCount > 256) {
+            pixelCount = 256;
+            pixelVelocity = -1;
+        } else if(pixelCount < 32) {
+            pixelCount = 32;
+            pixelVelocity = 1;
+        }
+    }
 
     update(); // asks for a PaintGL() call to occur
 }
-
-void Realtime::getSongMetadata() {
-    // yes I know this is the devil,
-//    system("../desktop/src/audio/venv/bin/python3 ../desktop/src/audio/fft.py");
-}
-
-
-
 
 void Realtime::raytrace() {
     if(!initialized) return;

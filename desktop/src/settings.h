@@ -10,9 +10,10 @@ struct Settings {
     int pixelCount = 128;
     bool pixelate = true;
     bool cinematic = true;
+    bool animatePixels = false;
     glm::vec3 fogColor = {0, 0.2, 0.5};
 
-    std::string songFilepath = "../desktop/resources/demo/audio/Track0.mp3";
+    std::string songFilepath = "../desktop/resources/demo/audio/Nature.mp3";
     float initialBPM = 0;
 
     // Realtime Settings

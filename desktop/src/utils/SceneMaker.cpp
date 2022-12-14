@@ -157,7 +157,9 @@ void SceneMaker::rotateMushroom(MushroomData* shroom, glm::vec4 look, float angl
     }
 }
 
-void SceneMaker::rotateMushroom2(MushroomData* shroom, glm::vec4 look, float angle) {
+void SceneMaker::bounceMushroom(MushroomData* shroom, glm::vec4 look, float angle) {
+    return;
+
     angle = glm::radians(angle);
     float c = cos(angle);
     float s = sin(angle);
@@ -194,7 +196,6 @@ void SceneMaker::rotateMushroom2(MushroomData* shroom, glm::vec4 look, float ang
 void SceneMaker::translateMushroom(MushroomData* shroom, float y) {
     glm::mat4 translate = glm::mat4({1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, y, 0, 1});
     for (int i = 0; i < (shroom->pieces).size(); i++) {
-
         glm::mat4 oldctm = shroom->pieces[i].ctm;
         glm::mat4 newctm = translate * oldctm;
 

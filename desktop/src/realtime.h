@@ -121,6 +121,10 @@ private:
     float rotate_total;
     bool translate_increase = true;
 
+    int pixelCount = settings.pixelCount;
+    int pixelVelocity = 1;
+
+
     // fullscreen quad with
     std::vector<GLfloat> screen_quad = {
           -1, 1, 0,     0, 1,
@@ -148,7 +152,6 @@ private:
     // Audio
     QMediaPlayer* player = nullptr;
     QAudioOutput* audioOutput = nullptr;
-    void getSongMetadata();
 
     // Device Correction Variables
     int m_devicePixelRatio;
