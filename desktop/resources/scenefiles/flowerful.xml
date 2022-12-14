@@ -22,7 +22,97 @@
         <object type="tree" name="root">
             <transblock>
                 <translate x="0" y="-0.1" z="0"/>
-                <scale x="12" y="0.1" z="100"/>
+                <scale x="10" y="0.1" z="10"/>
+                <object type="primitive" object="cube">
+                    <texture file="textures/disco.jpg"/>
+                    <ambient r="1" g="1" b="1"/>
+                    <diffuse r="1" g="1" b="1"/>
+                    <specular r="1" g="1" b="1"/>
+                </object>
+            </transblock>
+            <transblock>
+                <translate x="0" y="-0.1" z="10"/>
+                <scale x="10" y="0.1" z="10"/>
+                <object type="primitive" object="cube">
+                    <texture file="textures/disco.jpg"/>
+                    <ambient r="1" g="1" b="1"/>
+                    <diffuse r="1" g="1" b="1"/>
+                    <specular r="1" g="1" b="1"/>
+                </object>
+            </transblock>
+            <transblock>
+                <translate x="0" y="-0.1" z="20"/>
+                <scale x="10" y="0.1" z="10"/>
+                <object type="primitive" object="cube">
+                    <texture file="textures/disco.jpg"/>
+                    <ambient r="1" g="1" b="1"/>
+                    <diffuse r="1" g="1" b="1"/>
+                    <specular r="1" g="1" b="1"/>
+                </object>
+            </transblock>
+            <transblock>
+                <translate x="0" y="-0.1" z="30"/>
+                <scale x="10" y="0.1" z="10"/>
+                <object type="primitive" object="cube">
+                    <texture file="textures/disco.jpg"/>
+                    <ambient r="1" g="1" b="1"/>
+                    <diffuse r="1" g="1" b="1"/>
+                    <specular r="1" g="1" b="1"/>
+                </object>
+            </transblock>
+            <transblock>
+                <translate x="0" y="-0.1" z="40"/>
+                <scale x="10" y="0.1" z="10"/>
+                <object type="primitive" object="cube">
+                    <texture file="textures/disco.jpg"/>
+                    <ambient r="1" g="1" b="1"/>
+                    <diffuse r="1" g="1" b="1"/>
+                    <specular r="1" g="1" b="1"/>
+                </object>
+            </transblock>
+            <transblock>
+                <translate x="0" y="-0.1" z="50"/>
+                <scale x="10" y="0.1" z="10"/>
+                <object type="primitive" object="cube">
+                    <texture file="textures/disco.jpg"/>
+                    <ambient r="1" g="1" b="1"/>
+                    <diffuse r="1" g="1" b="1"/>
+                    <specular r="1" g="1" b="1"/>
+                </object>
+            </transblock>
+            <transblock>
+                <translate x="0" y="-0.1" z="60"/>
+                <scale x="10" y="0.1" z="10"/>
+                <object type="primitive" object="cube">
+                    <texture file="textures/disco.jpg"/>
+                    <ambient r="1" g="1" b="1"/>
+                    <diffuse r="1" g="1" b="1"/>
+                    <specular r="1" g="1" b="1"/>
+                </object>
+            </transblock>
+            <transblock>
+                <translate x="0" y="-0.1" z="70"/>
+                <scale x="10" y="0.1" z="10"/>
+                <object type="primitive" object="cube">
+                    <texture file="textures/disco.jpg"/>
+                    <ambient r="1" g="1" b="1"/>
+                    <diffuse r="1" g="1" b="1"/>
+                    <specular r="1" g="1" b="1"/>
+                </object>
+            </transblock>
+            <transblock>
+                <translate x="0" y="-0.1" z="90"/>
+                <scale x="10" y="0.1" z="10"/>
+                <object type="primitive" object="cube">
+                    <texture file="textures/disco.jpg"/>
+                    <ambient r="1" g="1" b="1"/>
+                    <diffuse r="1" g="1" b="1"/>
+                    <specular r="1" g="1" b="1"/>
+                </object>
+            </transblock>
+            <transblock>
+                <translate x="0" y="-0.1" z="100"/>
+                <scale x="10" y="0.1" z="10"/>
                 <object type="primitive" object="cube">
                     <texture file="textures/disco.jpg"/>
                     <ambient r="1" g="1" b="1"/>
