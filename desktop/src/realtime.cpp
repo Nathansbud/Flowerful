@@ -43,8 +43,6 @@ Realtime::Realtime(QWidget *parent)
     player = new QMediaPlayer;
     audioOutput = new QAudioOutput;
 
-    parent->setWindowTitle("Mysterious Forest")
-
     player->setAudioOutput(audioOutput);
     audioOutput->setVolume(settings.songVolume / 100.f);
     audioOutput->setMuted(!settings.notMuted);
