@@ -11,9 +11,6 @@
 - Fog:
 	- [opengl-notes tutorial](https://opengl-notes.readthedocs.io/en/latest/topics/texturing/aliasing.html)
 
-### Libraries: 
-
-
 ### Assets: 
 
 The assets used in this project are not owned by us:

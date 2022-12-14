@@ -174,7 +174,7 @@ void Realtime::initializeGL() {
 
     SceneParser::loadTexturesFromPaths(renderData.textures, mushPaths);
 
-    std::string path = "../desktop/resources/textures/disco.png";
+    std::string path = "../desktop/resources/textures/disco.jpg";
     TextureData& gt = renderData.textures.at(path);
 
     glGenTextures(1, &ground_texture);
@@ -622,6 +622,8 @@ void Realtime::timerEvent(QTimerEvent *event) {
 
     float newLocation = maxhop * sv;
     float newRotation = 15 * sv;
+
+    translate_increase = sin(bps * time) < 0;
 
     translate = newLocation - translate_total;
     rotate = newRotation - rotate_total;
